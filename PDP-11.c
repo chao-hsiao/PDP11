@@ -1,4 +1,4 @@
-//#include "pdp11.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,8 +9,10 @@ typedef unsigned short int word;	//16 bit
 typedef word adr;					//16 bit
 
 #define MEMSIZE (64 * 1024)
+#define REGSIZE 8
 
 word mem[MEMSIZE];
+word reg[REGSIZE];
 
 void test_mem();
 
@@ -26,8 +28,8 @@ void mem_dump(adr start, word n);
 int main(int argc, char const *argv[]) {
     //test_mem();
     load_file(argv[1]);
-    mem_dump(0x40, 0x2);
-    mem_dump(0x200, 0x2);
+    mem_dump(0x200, 0xc);
+    //mem_dump(0x400, 0x2);
 
 	return 0;
 }
@@ -58,24 +60,17 @@ void load_file(const char * filename) {
 
 	fin = fopen(filename, "r");
 
-    while(1) {
+    while(2 == fscanf(fin, "%hx%hx", &adr, &n)) {
 
-    	fscanf(fin, "%hx", &adr);
-    	printf("%hx\n", adr);
+    	printf("%04hx\n", adr);
+    	printf("%04hx\n", n);
 
-    	if (adr == 0)
-    		break;
-
-    	fscanf(fin, "%hx", &n);
-    	printf("%hx\n", n);
-
-    	for (n = n + adr; adr < n; ++adr)
+    	for (int i = 0; i < n; ++i)
     	{
     		fscanf(fin, "%hhx", &x);
-    		printf("%hhx\n", x);
-    	    b_write(adr, x);
+    		printf("%02hhx\n", x);
+    	    b_write(adr + i, x);
     	}
-    	adr = 0;
     }
 
 	fclose(fin);
