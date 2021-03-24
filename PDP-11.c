@@ -26,7 +26,8 @@ void mem_dump(adr start, word n);
 int main(int argc, char const *argv[]) {
     //test_mem();
     load_file(argv[1]);
-    mem_dump(mem[0], mem[2]);
+    mem_dump(0x40, 0x2);
+    mem_dump(0x200, 0x2);
 
 	return 0;
 }
@@ -56,27 +57,34 @@ void load_file(const char * filename) {
 	FILE *fin;
 
 	fin = fopen(filename, "r");
-	fscanf(fin, "%hx", &adr);
-	w_write(0, adr);
-	//printf("%hd\n", adr);
-	fscanf(fin, "%hx", &n);
-	w_write(2, n);
-	//printf("%hd\n", n);
 
-	for (int i = 4; i < n + 4; ++i)
-	{
-		fscanf(fin, "%hhx", &x);
-	    b_write(i, x);
-	}
+    while(1) {
+
+    	fscanf(fin, "%hx", &adr);
+    	printf("%hx\n", adr);
+
+    	if (adr == 0)
+    		break;
+
+    	fscanf(fin, "%hx", &n);
+    	printf("%hx\n", n);
+
+    	for (n = n + adr; adr < n; ++adr)
+    	{
+    		fscanf(fin, "%hhx", &x);
+    		printf("%hhx\n", x);
+    	    b_write(adr, x);
+    	}
+    	adr = 0;
+    }
 
 	fclose(fin);
-
 }
 
 void mem_dump(adr start, word n) {
 	for (int i = 0; i < n/2; i++)
 	{
-		printf("%06o : %06o\n", start, w_read(4 + 2 * i));
+		printf("%06o : %06o\n", start, w_read(start));
 		start = start + 2;
 	}
 
