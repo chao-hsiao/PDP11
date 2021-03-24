@@ -3,8 +3,9 @@
 #include <stdlib.h>
 
 word reg[8];
+reg[7] = 01000;
+#define pc reg[7]
 
-//#define pc reg[7]
 
 void run();
 void trace(char * c, word pc, word w);
@@ -39,11 +40,10 @@ int main(int argc, char const *argv[]) {
 }
 
 void run() {
-	word pc = reg[7];
-	pc = 01000;
 
 	while(1) {
 		word w = w_read(pc);
+		printf("%06o\n", pc);
 		trace("%06o %06o: ", pc, w);
 		pc = pc + 2;
 
