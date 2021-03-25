@@ -120,7 +120,7 @@ typedef struct {
 	word adr;
 } Argument;
 
-Argument SS, DD;
+Argument ss, dd;
 
 //enum LOGLEVEL current_log_level = INFO;
 int current_log_level = DEBUG;
@@ -179,6 +179,7 @@ void do_add() {
 }
 
 void do_mov() {
+	w_write(dd.adr, ss.val);
 }
 
 void do_halt() {
