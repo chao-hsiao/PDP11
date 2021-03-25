@@ -5,6 +5,7 @@
 #include <string.h>
 #include <assert.h>
 
+
 word mem[MEMSIZE];
 word reg[REGSIZE];
 
@@ -36,13 +37,13 @@ void load_file(const char * filename) {
 
     while(2 == fscanf(fin, "%hx%hx", &adr, &n)) {
 
-    	printf("%04hx\n", adr);
-    	printf("%04hx\n", n);
+    	//printf("%04hx\n", adr);
+    	//printf("%04hx\n", n);
 
     	for (int i = 0; i < n; ++i)
     	{
     		fscanf(fin, "%hhx", &x);
-    		printf("%02hhx\n", x);
+    		//printf("%02hhx\n", x);
     	    b_write(adr + i, x);
     	}
     }

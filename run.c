@@ -90,6 +90,7 @@ void trace(char * c, word pc, word w) {
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <errno.h>
 
 #define pc reg[7]
 
@@ -115,6 +116,13 @@ Command command[] = {
 	{0000000, 0000000, "nothing", do_nothing} // MUST LAST
 };
 
+typedef struct {
+	word val;
+	word adr;
+} Argument;
+
+Argument SS, DD;
+
 //enum LOGLEVEL current_log_level = INFO;
 int current_log_level = DEBUG;
 
@@ -128,8 +136,17 @@ int main(int argc, char const *argv[]) {
 		usage(argv[0]);
 		return 1;
 	}
+
+	FILE *fin;
+	fin = fopen(argv[1], "r");
+	if (errno) {
+		printf("%s: can't open %s for reading\n", argv[0], argv[1]);
+		exit(1);
+	}
+	fclose(fin);
+
 	load_file(argv[1]);
-	mem_dump(0x200,0xc);
+	//mem_dump(0x200,0xc);
 	run();
 	/*
 	int x = 4;
