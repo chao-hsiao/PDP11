@@ -29,7 +29,7 @@ int main(int argc, char const *argv[]) {
     //test_mem();
     load_file(argv[1]);
     mem_dump(0x200, 0xc);
-    //mem_dump(0x400, 0x2);
+    mem_dump(0x400, 0x2);
 
 	return 0;
 }
