@@ -90,7 +90,6 @@ void trace(char * c, word pc, word w) {
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <errno.h>
 
 #define pc reg[7]
 
@@ -137,15 +136,7 @@ int main(int argc, char const *argv[]) {
 		return 1;
 	}
 
-	FILE *fin;
-	fin = fopen(argv[1], "r");
-	if (errno) {
-		printf("%s: can't open %s for reading\n", argv[0], argv[1]);
-		exit(1);
-	}
-	fclose(fin);
-
-	load_file(argv[1]);
+	load_file(argv);
 	//mem_dump(0x200,0xc);
 	run();
 	/*

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-
+#include <errno.h>
 
 word mem[MEMSIZE];
 word reg[REGSIZE];
@@ -28,12 +28,17 @@ void w_write(adr a, word val) {
 	mem[a] = val;
 }
 
-void load_file(const char * filename) {
+void load_file(const char ** filename) {
 	byte x;
 	word adr, n;
 	FILE *fin;
 
-	fin = fopen(filename, "r");
+	fin = fopen(filename[1], "r");
+
+	if (errno) {
+		printf("%s: can't open %s for reading\n", filename[0], filename[1]);
+		exit(1);
+	}
 
     while(2 == fscanf(fin, "%hx%hx", &adr, &n)) {
 

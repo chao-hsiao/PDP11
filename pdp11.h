@@ -32,7 +32,7 @@ void b_write(adr a, byte val); 	// пишет значение val в "стар�
 word w_read(adr a);            	// читает из "старой памяти" mem слово с "адресом" a.
 void w_write(adr a, word val);  // пишет значение val в "старую память" mem в слово с "адресом" a.
 
-void load_file(const char * filename);
+void load_file(const char ** filename);
 void mem_dump(adr start, word n);
 
 // void trace(enum LOGLEVEL log_level, const char * c, ...);
