@@ -8,9 +8,22 @@ typedef word adr;					//16 bit
 
 #define MEMSIZE (64 * 1024)
 #define REGSIZE 8
+#define pc reg[7]
 
 extern word mem[MEMSIZE];
 extern word reg[REGSIZE];
+
+typedef struct {
+	word mask;
+	word opcode;
+	char * name;
+	void (*do_func)(word w);
+} Command;
+
+typedef struct {
+	word val;
+	word adr;
+} Arg;
 
 /*
 enum LOGLEVEL {
@@ -34,6 +47,8 @@ void w_write(adr a, word val);  // пишет значение val в "стар�
 
 void load_file(const char ** filename);
 void mem_dump(adr start, word n);
+
+void usage(const char * filename);
 
 // void trace(enum LOGLEVEL log_level, const char * c, ...);
 void trace(int log_level, const char * c, ...);
