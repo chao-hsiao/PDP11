@@ -64,6 +64,10 @@ void mem_dump(adr start, word n) {
 
 }
 
+void usage(const char * filename) {
+	printf("\nUSAGE: %s pdp_filename\n\n", filename);
+}
+
 void test_mem() {
 /*
     //------------ when the mem is word
