@@ -4,8 +4,6 @@
 #include <string.h>
 #include <stdarg.h>
 
-#define pc reg[7]
-
 //enum LOGLEVEL current_log_level = INFO;
 int current_log_level = TRACE;
 
@@ -16,13 +14,6 @@ void do_mov(word w);
 void do_add(word w);
 //void do_inc();
 
-typedef struct {
-	word mask;
-	word opcode;
-	char * name;
-	void (*do_func)(word w);
-} Command;
-
 Command command[] = {
 	{0170000, 0010000, "mov", do_mov},
 	{0170000, 0060000, "add", do_add},
@@ -31,21 +22,10 @@ Command command[] = {
 	{0000000, 0000000, "nothing", do_nothing} // MUST LAST
 };
 
-typedef struct {
-	word val;
-	word adr;
-} Arg;
-
 Arg ss, dd;
 Arg get_modereg(word w);
 
-void usage(const char * filename) {
-	printf("USAGE: %s pdp_filename\n", filename);
-}
-
 int main(int argc, char const *argv[]) {
-
-	printf("\n---------------- running --------------\n");
 
 	if (argc <= 1) {
 		usage(argv[0]);
@@ -54,6 +34,14 @@ int main(int argc, char const *argv[]) {
 
 	load_file(argv);
 	//mem_dump(0x200,0xc);
+
+
+	printf("\n---------------- running --------------\n");
+
+	
+
+	\
+	
 	run();
 	/*
 	int x = 4;
