@@ -120,7 +120,6 @@ Arg get_modereg(word w) {
 	trace(DEBUG,"%o ", regi);
 	mode = w >> 3 & 07;
 	trace(DEBUG,"%o ", mode);
-	reg[6] = 01000;
 
 	switch (mode) {
 		case 0:				//Rn
@@ -195,9 +194,9 @@ Arg get_modereg(word w) {
 			else
 				trace(TRACE, "@%o(R%o)", index, regi);
 			break;
-		//default:
-			//fprintf("%s\n", );
-			//exit(1);
+		default:
+			fprintf(stderr, "Mode %o is not created yet\n", mode);
+			exit(1);
 	}
 
 	return res;
