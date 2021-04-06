@@ -21,14 +21,15 @@ Arg ss, dd, rnn;
 
 void do_add() {
 	reg[dd.adr] = reg[dd.adr] + reg[ss.adr];
-	printf(" %o\n", reg[dd.adr]);
+	printf(" %o", reg[dd.adr]);
 }
 
-void do_sob() {/*
-	reg[R] = reg[R] - 1;
-	if (reg[R] != 0)
-		pc = pc - 2 * NN;
-	goto pc*/
+void do_sob() {
+	reg[rnn.adr] = reg[rnn.adr] - 1;
+	if (reg[rnn.adr] != 0)
+		pc = pc - 2 * rnn.val;
+	//goto NN;
+	printf(" %o ", pc);
 }
 
 void do_inc() {

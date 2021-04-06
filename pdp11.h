@@ -10,12 +10,15 @@ typedef word adr;					//16 bit
 #define REGSIZE 8
 #define pc reg[7]
 
-#define NO_PARAMS 0
+#define NO_PARAMS 0s
 #define HAS_DD 1
 #define HAS_SS 2
 #define HAS_R 8
 #define HAS_NN 4
+#define HAS_N 32
 #define HAS_XX 16
+#define HAS_TT 64
+#define HAS_B 128
 
 
 extern word mem[MEMSIZE];
