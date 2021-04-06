@@ -42,7 +42,7 @@ void run() {
 			cmd = command[i];
 			if ((w & cmd.mask) == cmd.opcode) {
 				trace(TRACE, "%s ", cmd.name);
-				//if(cmd.params == NO_PARAMS)
+				if(cmd.params == NO_PARAMS) {}
 
 				if((cmd.params & 2) == HAS_SS) {
 					ss = get_modereg(w >> 6);
@@ -50,13 +50,16 @@ void run() {
 				}
 				if((cmd.params & 1) == HAS_DD)
 					dd = get_modereg(w);
-				if((cmd.params & 8) == 8) {
+				if((cmd.params & 8) == HAS_R) {
 					rnn.adr = (w & 0777) >> 6;
 					trace(TRACE, "R%o,", rnn.adr);
 				}
-				if((cmd.params & 4) == 4) {
+				if((cmd.params & 4) == HAS_NN) {
 					rnn.val = w & 077;
 					trace(TRACE,"%o", rnn.val);
+				}
+				if((cmd.params & 16) == HAS_XX) {
+					
 				}
 
 				cmd.do_func();

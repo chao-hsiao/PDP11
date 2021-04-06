@@ -12,7 +12,7 @@ Command command[] = {
 	{0177000, 0077000, "SOB", 12, do_sob},
 	{0177700, 0005000, "CLR", 1, do_clr},
 	{0177777, 0000000, "HALT", 0, do_halt},
-	//{0177700, 0005200, "INC", do_inc}
+	{0177700, 0005200, "INC", 1, do_inc},
 	{0000000, 0000000, "NOTHING", 0, do_nothing} // MUST LAST
 };
 
@@ -29,6 +29,10 @@ void do_sob() {/*
 	if (reg[R] != 0)
 		pc = pc - 2 * NN;
 	goto pc*/
+}
+
+void do_inc() {
+
 }
 
 void do_clr() {
@@ -49,3 +53,12 @@ void do_halt() {
 void do_nothing() {
   
 }
+
+
+
+
+
+
+
+
+
