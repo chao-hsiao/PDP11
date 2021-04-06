@@ -10,20 +10,13 @@ typedef word adr;					//16 bit
 #define REGSIZE 8
 #define pc reg[7]
 
+#define NO_PARAMS 0
+#define HAS_DD 1
+#define HAS_SS 2
+
 extern word mem[MEMSIZE];
 extern word reg[REGSIZE];
-
-typedef struct {
-	word mask;
-	word opcode;
-	char * name;
-	void (*do_func)(word w);
-} Command;
-
-typedef struct {
-	word val;
-	word adr;
-} Arg;
+extern word PSW;
 
 /*
 enum LOGLEVEL {

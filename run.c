@@ -1,4 +1,5 @@
 #include "pdp11.h"
+#include "cmd.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,21 +9,6 @@
 int current_log_level = TRACE;
 
 void run();
-void do_halt(word w);
-void do_nothing(word w);
-void do_mov(word w);
-void do_add(word w);
-//void do_inc();
-
-Command command[] = {
-	{0170000, 0010000, "mov", do_mov},
-	{0170000, 0060000, "add", do_add},
-	{0177777, 0000000, "halt", do_halt},
-	//{0177700, 0005200, "inc", do_inc}
-	{0000000, 0000000, "nothing", do_nothing} // MUST LAST
-};
-
-Arg ss, dd;
 Arg get_modereg(word w);
 
 int main(int argc, char const *argv[]) {
@@ -35,26 +21,11 @@ int main(int argc, char const *argv[]) {
 	load_file(argv);
 	//mem_dump(0x200,0xc);
 
-
 	printf("\n---------------- running --------------\n");
 
-	
-
-	\
-	
 	run();
-	/*
-	int x = 4;
-    trace(DEBUG, "My debug info x=%d\n", x);
-	x = 6;
-    trace(TRACE, "trace x=%d\n", x);
-	trace(INFO, "hello\n");
-	trace(ERROR, "ERROR: %s\n", command[0].name);
-	int old_log_level = current_log_level;
-	current_log_level = DEBUG;
-    trace(DEBUG, "My debug info x=%d\n", x);
-	current_log_level = old_log_level;
-	*/
+	
+	printf("\n---------------- halted --------------\n");
 
 	return 0;
 }
@@ -67,37 +38,33 @@ void run() {
 		trace(TRACE, "%06o %06o: ", pc, w);
 		pc = pc + 2;
 
-		for(int i = 0; ; i++) {
-			Command cmd = command[i];
+		for(int i = 0; ;i++) {
+			cmd = command[i];
 			if ((w & cmd.mask) == cmd.opcode) {
 				trace(TRACE, "%s ", cmd.name);
-				cmd.do_func(w);
+				//if(cmd.params == NO_PARAMS)
+
+				if((cmd.params & 2) == HAS_SS) {
+					ss = get_modereg(w >> 6);
+					printf(",");
+				}
+				if((cmd.params & 1) == HAS_DD)
+					dd = get_modereg(w);
+				if((cmd.params & 8) == 8) {
+					rnn.adr = (w & 0777) >> 6;
+					trace(TRACE, "R%o,", rnn.adr);
+				}
+				if((cmd.params & 4) == 4) {
+					rnn.val = w & 077;
+					trace(TRACE,"%o", rnn.val);
+				}
+
+				cmd.do_func();
 				trace(TRACE, "\n");
 				break;
 			}
 		}
 	}
-}
-
-void do_add(word w) {
-}
-
-void do_mov(word w) {
-	//word w = w_read(pc - 2);	//you have to like that cuz after first get_modered the valuse of r7(pc) may changed
-	ss = get_modereg(w >> 6);
-	printf(",");
-	dd = get_modereg(w);
-	w_write(dd.adr, ss.val);
-	//trace(TRACE, "%o", dd.val);
-}
-
-void do_halt(word w) {
-	printf("THE END\n\n");
-	exit(0);
-}
-
-void do_nothing(word w) {
-  
 }
 
 Arg get_modereg(word w) {
