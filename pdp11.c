@@ -1,4 +1,4 @@
-s#include "pdp11.h"
+#include "pdp11.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,28 +15,34 @@ byte b_read(adr a) {
     else
     	return (byte)(mem[a-1] >> 8 & 255);
 }
-void b_write(adr a, byte val) {
-	if(a % 2 == 0)
-    	mem[a] = val;
-    else
-    	mem[a-1] = ((word)val << 8 & ~255) | mem[a-1];
+void b_write(adr a, byte val, int in_reg) {
+	if(in_reg)
+		reg[a] = val;
+	else
+		if(a % 2 == 0)
+    		mem[a] = val;
+    	else
+    		mem[a-1] = ((word)val << 8 & ~255) | mem[a-1];
 }
 word w_read(adr a) {
     return mem[a];
 }
-void w_write(adr a, word val) {
-	mem[a] = val;
+void w_write(adr a, word val, int in_reg) {
+	if (in_reg)
+		reg[a] = val;
+	else
+		mem[a] = val;
 }
 
-void load_file(const char ** filename) {
+void load_file(const char ** filename, int argc) {
 	byte x;
 	word adr, n;
 	FILE *fin;
 
-	fin = fopen(filename[1], "r");
+	fin = fopen(filename[argc], "r");
 
 	if (errno) {
-		printf("%s: can't open %s for reading\n", filename[0], filename[1]);
+		printf("%s: can't open %s for reading\n", filename[0], filename[argc]);
 		exit(1);
 	}
 
@@ -49,11 +55,17 @@ void load_file(const char ** filename) {
     	{
     		fscanf(fin, "%hhx", &x);
     		//printf("%02hhx\n", x);
-    	    b_write(adr + i, x);
+    	    b_write(adr + i, x, in_reg(adr + i));
     	}
     }
 
 	fclose(fin);
+}
+
+int in_reg(adr a) {
+	if(a < 8)
+		return 1;
+	return 0;
 }
 
 void mem_dump(adr start, word n) {
@@ -68,9 +80,9 @@ void mem_dump(adr start, word n) {
 void usage(const char * filename) {
 	printf("\nUSAGE: %s pdp_filename\n\n", filename);
 }
-
-void test_mem() {
 /*
+void test_mem() {
+
     //------------ when the mem is word
 	word w0 = 0x0b0a;
 	//пишим слов, читаем слов
@@ -94,7 +106,7 @@ void test_mem() {
     //-------------
 */
 
-	
+	/*
 	//------------ when the mem is byte
 	byte b0 = 0x0a;
 	//пишим байт, читаем байт
@@ -118,5 +130,5 @@ void test_mem() {
 }
 
 
-
+*/
 

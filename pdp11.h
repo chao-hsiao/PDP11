@@ -10,7 +10,7 @@ typedef word adr;					//16 bit
 #define REGSIZE 8
 #define pc reg[7]
 
-#define NO_PARAMS 0s
+#define NO_PARAMS 0
 #define HAS_DD 1
 #define HAS_SS 2
 #define HAS_R 8
@@ -41,12 +41,14 @@ enum LOGLEVEL {
 void test_mem();
 
 byte b_read(adr a);        		// читает из "старой памяти" mem байт с "адресом" a.
-void b_write(adr a, byte val); 	// пишет значение val в "старую память" mem в байт с "адресом" a.
+void b_write(adr a, byte val, int in_reg); 	// пишет значение val в "старую память" mem в байт с "адресом" a.
 word w_read(adr a);            	// читает из "старой памяти" mem слово с "адресом" a.
-void w_write(adr a, word val);  // пишет значение val в "старую память" mem в слово с "адресом" a.
+void w_write(adr a, word val, int in_reg);  // пишет значение val в "старую память" mem в слово с "адресом" a.
 
-void load_file(const char ** filename);
+void load_file(const char ** filename, int argc);
 void mem_dump(adr start, word n);
+
+int in_reg(adr a);
 
 void usage(const char * filename);
 

@@ -6,26 +6,27 @@
 #include <stdarg.h>
 
 //enum LOGLEVEL current_log_level = INFO;
-int current_log_level = TRACE;
+int current_log_level = INFO;
 
 void run();
 Arg get_modereg(word w);
 
 int main(int argc, char const *argv[]) {
+	printf("%d\n", argc);
 
 	if (argc <= 1) {
 		usage(argv[0]);
 		return 1;
 	}
+	if (argc == 3 && strcmp("-t", argv[2]))
+		current_log_level = TRACE;
 
-	load_file(argv);
+	load_file(argv, argc - 1);
 	//mem_dump(0x200,0xc);
 
 	printf("\n---------------- running --------------\n");
 
 	run();
-	
-	printf("\n---------------- halted --------------\n");
 
 	return 0;
 }
@@ -46,7 +47,7 @@ void run() {
 
 				if((cmd.params & 2) == HAS_SS) {
 					ss = get_modereg(w >> 6);
-					printf(",");
+					trace(TRACE, ",");
 				}
 				if((cmd.params & 1) == HAS_DD)
 					dd = get_modereg(w);
