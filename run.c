@@ -12,7 +12,7 @@ void run();
 Arg get_modereg(word w);
 
 int main(int argc, char const *argv[]) {
-	printf("%d\n", argc);
+	//printf("%d\n", argc);
 
 	if (argc <= 1) {
 		usage(argv[0]);
@@ -42,29 +42,31 @@ void run() {
 		for(int i = 0; ;i++) {
 			cmd = command[i];
 			if ((w & cmd.mask) == cmd.opcode) {
-				trace(TRACE, "%s ", cmd.name);
+				trace(TRACE, "%s\t", cmd.name);
+
 				if(cmd.params == NO_PARAMS) {}
 
-				if((cmd.params & 2) == HAS_SS) {
+				if((cmd.params & HAS_SS) == HAS_SS) {
 					ss = get_modereg(w >> 6);
 					trace(TRACE, ",");
 				}
-				if((cmd.params & 1) == HAS_DD)
+				if((cmd.params & HAS_DD) == HAS_DD)
 					dd = get_modereg(w);
-				if((cmd.params & 8) == HAS_R) {
+				if((cmd.params & HAS_R) == HAS_R) {
 					rnn.adr = (w & 0777) >> 6;
 					trace(TRACE, "R%o,", rnn.adr);
 				}
-				if((cmd.params & 4) == HAS_NN) {
+				if((cmd.params & HAS_NN) == HAS_NN) {
 					rnn.val = w & 077;
-					trace(TRACE,"%o", rnn.val);
+					trace(DEBUG,"%o", rnn.val);
 				}
-				if((cmd.params & 16) == HAS_XX) {
-					
-				}
+				if((cmd.params & HAS_XX) == HAS_XX) {}
+				if((cmd.params & HAS_N) == HAS_N) {}
+				if((cmd.params & HAS_TT) == HAS_TT) {}
+				if((cmd.params & HAS_B) == HAS_B) {}
 
 				cmd.do_func();
-				trace(TRACE, "\n");
+				
 				break;
 			}
 		}
@@ -102,7 +104,7 @@ Arg get_modereg(word w) {
 			res.val = res.adr % 2 ? b_read(res.adr) : w_read(res.adr);
 			reg[regi] = reg[regi] + 2;
 			if (regi == 7)
-				trace(TRACE, "#%o", res.val);
+				trace(TRACE, "#%06o", res.val);
 			else
 				trace(TRACE, "(R%o)+", regi);
 			break;
@@ -111,7 +113,7 @@ Arg get_modereg(word w) {
 			res.val = res.adr % 2 ? b_read(res.adr) : w_read(res.adr);
 			reg[regi] = reg[regi] + 2;
 			if (regi == 7)
-				trace(TRACE, "@#%o", res.adr);
+				trace(TRACE, "@#%06o", res.adr);
 			else
 				trace(TRACE, "@(R%o)+", regi);
 			break;
@@ -139,7 +141,7 @@ Arg get_modereg(word w) {
 			res.adr = reg[regi] + index;
 			res.val = res.adr % 2 ? b_read(res.adr) : w_read(res.adr);
 			if (regi == 7)
-				trace(TRACE, "%o ", res.adr);
+				trace(TRACE, "%06o ", res.adr);
 			else
 				trace(TRACE, "%o(R%o)", index, regi);
 			break;
@@ -149,7 +151,7 @@ Arg get_modereg(word w) {
 			res.adr = ((reg[regi] + index) % 2) == 1 ? b_read(reg[regi] + index) : w_read(reg[regi] + index);
 			res.val = res.adr % 2 ? b_read(res.adr) : w_read(res.adr);
 			if (regi == 7)
-				trace(TRACE, "@%o", res.adr);
+				trace(TRACE, "@%06o", res.adr);
 			else
 				trace(TRACE, "@%o(R%o)", index, regi);
 			break;

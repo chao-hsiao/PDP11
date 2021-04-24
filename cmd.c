@@ -20,8 +20,16 @@ Command cmd;
 Arg ss, dd, rnn;
 
 void do_add() {
-	reg[dd.adr] = reg[dd.adr] + reg[ss.adr];
+	
+	//reg[dd.adr] = reg[dd.adr] + reg[ss.adr];
+	
 	//printf(" %o", reg[dd.adr]);
+
+	w_write(dd.adr, ss.val + dd.val, in_reg(dd.adr));
+	if (in_reg(dd.adr))
+		trace(TRACE, "\t\t\tR%o=%06o R%o=%06o\n", ss.adr, reg[ss.adr], dd.adr, reg[dd.adr]);
+	else
+		trace(TRACE, "\t\t[%06o]=%06o [%06o]=%06o\n", ss.adr, mem[ss.adr], dd.adr, mem[dd.adr]);
 }
 
 void do_sob() {
@@ -29,7 +37,7 @@ void do_sob() {
 	if (reg[rnn.adr] != 0)
 		pc = pc - 2 * rnn.val;
 	//goto NN;
-	printf(" %o ", pc);
+	trace(TRACE, "%06o \n", pc);
 }
 
 void do_inc() {
@@ -38,11 +46,13 @@ void do_inc() {
 
 void do_clr() {
 	reg[dd.adr] = 0;
+	trace(TRACE, "\n");
 }
 
 void do_mov() {
 	//word w = w_read(pc - 2);	//you have to like that cuz after first get_modered the valuse of r7(pc) may changed
 	w_write(dd.adr, ss.val, in_reg(dd.adr));
+	trace(TRACE, "\t\t[%06o]=%06o\n", ss.adr, mem[ss.adr]);
 	//trace(TRACE, "%o", dd.val);
 }
 

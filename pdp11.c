@@ -8,7 +8,6 @@
 word mem[MEMSIZE];
 word reg[REGSIZE];
 word PSW;
-
 byte b_read(adr a) {
 	if(a % 2 == 0)
     	return (byte)(mem[a] & 255);
