@@ -8,11 +8,14 @@
 word mem[MEMSIZE];
 word reg[REGSIZE];
 word PSW;
-byte b_read(adr a) {
-	if(a % 2 == 0)
-    	return (byte)(mem[a] & 255);
-    else
-    	return (byte)(mem[a-1] >> 8 & 255);
+byte b_read(adr a, int in_reg) {
+	if(in_reg)
+		return reg[a];
+	else
+		if(a % 2 == 0)
+    		return (byte)(mem[a] & 255);
+    	else
+    		return (byte)(mem[a-1] >> 8 & 255);
 }
 void b_write(adr a, byte val, int in_reg) {
 	if(in_reg)
@@ -23,7 +26,9 @@ void b_write(adr a, byte val, int in_reg) {
     	else
     		mem[a-1] = ((word)val << 8 & ~255) | mem[a-1];
 }
-word w_read(adr a) {
+word w_read(adr a, int in_reg) {
+	if(in_reg)
+		return reg[a];
     return mem[a];
 }
 void w_write(adr a, word val, int in_reg) {
@@ -70,7 +75,7 @@ int in_reg(adr a) {
 void mem_dump(adr start, word n) {
 	for (int i = 0; i < n/2; i++)
 	{
-		printf("%06o : %06o\n", start, w_read(start));
+		printf("%06o : %06o\n", start, w_read(start, in_reg(start)));
 		start = start + 2;
 	}
 

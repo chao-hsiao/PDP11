@@ -23,6 +23,7 @@ extern Command cmd;
 void do_halt();
 void do_nothing();
 void do_mov();
+void do_movb();
 void do_add();
 void do_sob();
 void do_clr();

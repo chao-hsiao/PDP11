@@ -40,9 +40,9 @@ enum LOGLEVEL {
 
 void test_mem();
 
-byte b_read(adr a);        		// читает из "старой памяти" mem байт с "адресом" a.
+byte b_read(adr a, int in_reg);        		// читает из "старой памяти" mem байт с "адресом" a.
 void b_write(adr a, byte val, int in_reg); 	// пишет значение val в "старую память" mem в байт с "адресом" a.
-word w_read(adr a);            	// читает из "старой памяти" mem слово с "адресом" a.
+word w_read(adr a, int in_reg);            	// читает из "старой памяти" mem слово с "адресом" a.
 void w_write(adr a, word val, int in_reg);  // пишет значение val в "старую память" mem в слово с "адресом" a.
 
 void load_file(const char ** filename, int argc);
