@@ -24,6 +24,7 @@ typedef word adr;					//16 bit
 extern word mem[MEMSIZE];
 extern word reg[REGSIZE];
 extern word PSW;
+extern int counter;
 
 /*
 enum LOGLEVEL {

@@ -38,6 +38,7 @@ void run() {
 		word w = w_read(pc, in_reg(pc));
 		trace(TRACE, "%06o %06o: ", pc, w);
 		pc = pc + 2;
+		counter++;
 
 		for(int i = 0; ;i++) {
 			cmd = command[i];

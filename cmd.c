@@ -62,6 +62,7 @@ void do_halt() {
 	printf("\n---------------- halted --------------\n");
 	printf("R0=%06o R2=%06o R4=%06o SP=%06o\n", reg[0],reg[2],reg[4],reg[6]);
 	printf("R1=%06o R3=%06o R5=%06o PC=%06o\n", reg[1],reg[3],reg[5],reg[7]);
+	printf("psw=%06o: cm=k pm=k pri=0        [%d]\n", PSW, counter);
 	exit(0);
 }
 

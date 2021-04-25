@@ -5,9 +5,12 @@
 #include <assert.h>
 #include <errno.h>
 
-word mem[MEMSIZE];
-word reg[REGSIZE];
-word PSW;
+word mem[MEMSIZE];	//RAM
+word reg[REGSIZE];	//registers
+word PSW;			//process state word(слово состояния процессор)
+int counter = 0;
+
+//byte read
 byte b_read(adr a, int in_reg) {
 	if(in_reg)
 		return reg[a];
@@ -17,6 +20,7 @@ byte b_read(adr a, int in_reg) {
     	else
     		return (byte)(mem[a-1] >> 8 & 255);
 }
+//byte write
 void b_write(adr a, byte val, int in_reg) {
 	if(in_reg)
 		reg[a] = val;
@@ -26,11 +30,13 @@ void b_write(adr a, byte val, int in_reg) {
     	else
     		mem[a-1] = ((word)val << 8 & ~255) | mem[a-1];
 }
+//word read
 word w_read(adr a, int in_reg) {
 	if(in_reg)
 		return reg[a];
     return mem[a];
 }
+//word write
 void w_write(adr a, word val, int in_reg) {
 	if (in_reg)
 		reg[a] = val;
@@ -38,6 +44,7 @@ void w_write(adr a, word val, int in_reg) {
 		mem[a] = val;
 }
 
+//to load file in the RAM
 void load_file(const char ** filename, int argc) {
 	byte x;
 	word adr, n;
@@ -66,12 +73,13 @@ void load_file(const char ** filename, int argc) {
 	fclose(fin);
 }
 
+//yes or no to put in reg
 int in_reg(adr a) {
 	if(a < 8)
 		return 1;
 	return 0;
 }
-
+//forget it
 void mem_dump(adr start, word n) {
 	for (int i = 0; i < n/2; i++)
 	{
@@ -80,10 +88,12 @@ void mem_dump(adr start, word n) {
 	}
 
 }
-
+//to remember to input the file name
 void usage(const char * filename) {
 	printf("\nUSAGE: %s pdp_filename\n\n", filename);
 }
+
+
 /*
 void test_mem() {
 
