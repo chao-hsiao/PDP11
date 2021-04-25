@@ -21,11 +21,6 @@ Command cmd;
 Arg ss, dd, rnn;
 
 void do_add() {
-	
-	//reg[dd.adr] = reg[dd.adr] + reg[ss.adr];
-	
-	//printf(" %o", reg[dd.adr]);
-
 	w_write(dd.adr, ss.val + dd.val, in_reg(dd.adr));
 	if (in_reg(dd.adr))
 		trace(TRACE, " \t\t\tR%o=%06o R%o=%06o\n", ss.adr, w_read(ss.adr, in_reg(ss.adr)), dd.adr, w_read(dd.adr, in_reg(dd.adr)));
@@ -42,9 +37,7 @@ void do_sob() {
 		trace(TRACE, "%06o \n", pc - 2 * rnn.val);
 }
 
-void do_inc() {
-
-}
+void do_inc() {}
 
 void do_clr() {
 	reg[dd.adr] = 0;
@@ -52,16 +45,16 @@ void do_clr() {
 }
 
 void do_mov() {
-	//word w = w_read(pc - 2);	//you have to like that cuz after first get_modered the valuse of r7(pc) may changed
 	w_write(dd.adr, ss.val, in_reg(dd.adr));
 	trace(TRACE, " \t\t[%06o]=%06o\n", ss.adr, w_read(ss.adr, in_reg(ss.adr)));
-	//trace(TRACE, "%o", dd.val);
 }
 void do_movb() {
-	//word w = w_read(pc - 2);	//you have to like that cuz after first get_modered the valuse of r7(pc) may changed
-	w_write(dd.adr, ss.val >> 7 ? (ss.val & 0xff) | 0xff00 : ss.val & 0xff, in_reg(dd.adr));
+	if(in_reg(dd.adr))
+		w_write(dd.adr, ss.val >> 7 ? (ss.val & 0xff) | 0xff00 : ss.val & 0xff, in_reg(dd.adr));
+	else
+		b_write(dd.adr, ss.val, in_reg(dd.adr));
+
 	trace(TRACE, " \t\t[%06o]=%03o\n", ss.adr, b_read(ss.adr, in_reg(ss.adr)));
-	//trace(TRACE, "%o", dd.val);
 }
 
 void do_halt() {
@@ -72,9 +65,7 @@ void do_halt() {
 	exit(0);
 }
 
-void do_nothing() {
-  
-}
+void do_nothing() {}
 
 
 
