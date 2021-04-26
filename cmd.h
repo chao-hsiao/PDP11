@@ -15,10 +15,12 @@ typedef struct {
 	word adr;
 } Arg;
 
-extern Arg ss, dd, rnn;
+extern Arg b, ss, dd, nn, n, r, tt, xx;
 
 extern Command command[];
 extern Command cmd;
+
+word psw(word w0, word w1);
 
 void do_halt();
 void do_nothing();
