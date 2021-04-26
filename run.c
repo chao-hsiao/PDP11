@@ -12,15 +12,9 @@ void run();
 Arg get_modereg(word w, int is_byte);
 
 int main(int argc, char const *argv[]) {
-	//printf("%d\n", argc);
 
-	if (argc <= 1) {
-		usage(argv[0]);
+	if(usage(argv, argc))
 		return 1;
-	}
-	if (argc == 3 && strcmp("-t", argv[2]))
-		current_log_level = TRACE;
-
 	load_file(argv, argc - 1);
 	//mem_dump(0x200,0xc);
 
@@ -36,26 +30,26 @@ void run() {
 
 	while(1) {
 		word w = w_read(pc, in_reg(pc));
-		trace(TRACE, "%06o %06o: ", pc, w);
+		trace(TRACE1, "%06o %06o: ", pc, w);
 		pc = pc + 2;
 		counter++;
 
 		for(int i = 0; ;i++) {
 			cmd = command[i];
 			if ((w & cmd.mask) == cmd.opcode) {
-				trace(TRACE, "%s\t", cmd.name);
+				trace(TRACE1, "%s\t", cmd.name);
 
 				if(cmd.params == NO_PARAMS) {}
 
 				if((cmd.params & HAS_SS) == HAS_SS) {
 					ss = get_modereg(w >> 6, w >> 15);
-					trace(TRACE, ",");
+					trace(TRACE1, ",");
 				}
 				if((cmd.params & HAS_DD) == HAS_DD)
 					dd = get_modereg(w, w >> 15);
 				if((cmd.params & HAS_R) == HAS_R) {
 					rnn.adr = (w & 0777) >> 6;
-					trace(TRACE, "R%o,", rnn.adr);
+					trace(TRACE1, "R%o,", rnn.adr);
 				}
 				if((cmd.params & HAS_NN) == HAS_NN) {
 					rnn.val = w & 077;
@@ -88,53 +82,53 @@ Arg get_modereg(word w, int is_byte) {
 			res.adr = regi;
 			res.val = reg[regi];
 			if (regi == 7)
-				trace(TRACE, "pc");
+				trace(TRACE1, "pc");
 			else
-				trace(TRACE, "R%o", regi);
+				trace(TRACE1, "R%o", regi);
 			break;
 		case 1:				//(Rn)
 			res.adr = reg[regi];
 			res.val = is_byte ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
-				trace(TRACE, "(pc)", regi);
+				trace(TRACE1, "(pc)", regi);
 			else
-				trace(TRACE, "(R%o)", regi);
+				trace(TRACE1, "(R%o)", regi);
 			break;
 		case 2:				//(Rn)+; if n = 7 -> #val
 			res.adr = reg[regi];
 			res.val = is_byte ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			reg[regi] = reg[regi] + (is_byte ? 1 : 2);
 			if (regi == 7)
-				trace(TRACE, "#%06o", res.val);
+				trace(TRACE1, "#%06o", res.val);
 			else
-				trace(TRACE, "(R%o)+", regi);
+				trace(TRACE1, "(R%o)+", regi);
 			break;
 		case 3:				//@(Rn)+; if n = 7 -> @#adr
 			res.adr = is_byte ? b_read(reg[regi], in_reg(reg[regi])) : w_read(reg[regi], in_reg(reg[regi]));
 			res.val = is_byte ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			reg[regi] = reg[regi] + (is_byte ? 1 : 2);
 			if (regi == 7)
-				trace(TRACE, "@#%06o", res.adr);
+				trace(TRACE1, "@#%06o", res.adr);
 			else
-				trace(TRACE, "@(R%o)+", regi);
+				trace(TRACE1, "@(R%o)+", regi);
 			break;
 		case 4:				//-(Rn)
 			reg[regi] = reg[regi] - 2;
 			res.adr = reg[regi];
 			res.val = is_byte ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));	
 			if (regi == 7)
-				trace(TRACE, "-(pc)");
+				trace(TRACE1, "-(pc)");
 			else
-				trace(TRACE, "-(R%o)", regi);
+				trace(TRACE1, "-(R%o)", regi);
 			break;
 		case 5:				//@-(Rn)
 			reg[regi] = reg[regi] - (is_byte ? 1 : 2);
 			res.adr = is_byte ? b_read(reg[regi], in_reg(reg[regi])) : w_read(reg[regi], in_reg(reg[regi]));
 			res.val = is_byte ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
-				trace(TRACE, "@-(pc)");
+				trace(TRACE1, "@-(pc)");
 			else
-				trace(TRACE, "@-(R%o)", regi);
+				trace(TRACE1, "@-(R%o)", regi);
 			break;
 		case 6:				//X(Rn); if n = 7 -> adr
 			index = w_read(pc, in_reg(pc));
@@ -142,9 +136,9 @@ Arg get_modereg(word w, int is_byte) {
 			res.adr = reg[regi] + index;
 			res.val = is_byte ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
-				trace(TRACE, "%06o ", res.adr);
+				trace(TRACE1, "%06o ", res.adr);
 			else
-				trace(TRACE, "%o(R%o)", index, regi);
+				trace(TRACE1, "%o(R%o)", index, regi);
 			break;
 		case 7:				//@X(Rn); if n = 7 -> @adr
 			index = w_read(pc, in_reg(pc));
@@ -152,9 +146,9 @@ Arg get_modereg(word w, int is_byte) {
 			res.adr = is_byte ? b_read(reg[regi] + index, in_reg(reg[regi] + index)) : w_read(reg[regi] + index, in_reg(reg[regi] + index));
 			res.val = is_byte ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
-				trace(TRACE, "@%06o", res.adr);
+				trace(TRACE1, "@%06o", res.adr);
 			else
-				trace(TRACE, "@%o(R%o)", index, regi);
+				trace(TRACE1, "@%o(R%o)", index, regi);
 			break;
 		default:
 			fprintf(stderr, "Mode %o is not created yet\n", mode);

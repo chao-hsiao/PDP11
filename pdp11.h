@@ -25,6 +25,7 @@ extern word mem[MEMSIZE];
 extern word reg[REGSIZE];
 extern word PSW;
 extern int counter;
+extern int current_log_level;
 
 /*
 enum LOGLEVEL {
@@ -35,9 +36,10 @@ enum LOGLEVEL {
 };
 */
 #define DEBUG 1
-#define TRACE 2
-#define INFO 3
-#define ERROR 4
+#define TRACE2 2
+#define TRACE1 3
+#define INFO 4
+#define ERROR 5
 
 void test_mem();
 
@@ -51,7 +53,7 @@ void mem_dump(adr start, word n);
 
 int in_reg(adr a);
 
-void usage(const char * filename);
+int usage(const char ** argv, int argc);
 
 // void trace(enum LOGLEVEL log_level, const char * c, ...);
 void trace(int log_level, const char * c, ...);

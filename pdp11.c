@@ -89,8 +89,33 @@ void mem_dump(adr start, word n) {
 
 }
 //to remember to input the file name
-void usage(const char * filename) {
-	printf("\nUSAGE: %s pdp_filename\n\n", filename);
+int usage(const char ** argv, int argc) {
+	if (argc <= 1){
+		//printf("\nUSAGE: %s pdp_filename\n\n", argv[0]);
+		printf("\nUsage: %s [options] initial-core-file [options to emulated program]\n", argv[0]);
+		printf("\nOptions:\n");
+		printf("\t-t\tshow trace to stderr\n");
+		printf("\t-T\tshow verbose trace to stderr\n");
+		return 1;
+	}
+	else if (argc == 3)
+	{
+		if(!strcmp("-t", argv[1])){
+			current_log_level = TRACE1;
+			return 0;
+		}
+		else if(!strcmp("-T", argv[1])){
+			current_log_level = TRACE2;
+			return 0;
+		}
+		printf("%s: bad flag %s\n", argv[0], argv[1]);
+		printf("\nUsage: %s [options] initial-core-file [options to emulated program]\n", argv[0]);
+		printf("\nOptions:\n");
+		printf("\t-t\tshow trace to stderr\n");
+		printf("\t-T\tshow verbose trace to stderr\n");
+		return 1;
+	}
+	return 0;
 }
 
 
