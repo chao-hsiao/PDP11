@@ -18,16 +18,16 @@ Command command[] = {
 	//{0177700, 0105100, "COMb", HAS_DD + HAS_B, do_comb},
 	{0177400, 0000400, "BR", HAS_XX, do_br},
 	{0177400, 0001400, "BEQ", HAS_XX, do_beq},
-	/*{0177700, 0001000, "BNE", HAS_XX, do_bne},
-	{0177700, 0100400, "BMI", HAS_XX, do_bmi},
-	{0177700, 0100000, "BPL", HAS_XX, do_bpl},
-	{0177700, 0002400, "BLT", HAS_XX, do_blt},
-	{0177700, 0002000, "BGE", HAS_XX, do_bge},
-	{0177700, 0003400, "BLE", HAS_XX, do_ble},
-	{0177700, 0000100, "JMP", HAS_DD, do_jmp},
-	{0177700, 0005700, "TST", HAS_XX, do_tst},
-	{0177700, 0105700, "TSTb", HAS_XX + HAS_B, do_tstb},
-	{0177777, 0000257, "CCC", NO_PARAMS, do_ccc},
+	//{0177400, 0001000, "BNE", HAS_XX, do_bne},
+	//{0177400, 0100400, "BMI", HAS_XX, do_bmi},
+	{0177400, 0100000, "BPL", HAS_XX, do_bpl},
+	//{0177400, 0002400, "BLT", HAS_XX, do_blt},
+	//{0177400, 0002000, "BGE", HAS_XX, do_bge},
+	//{0177400, 0003400, "BLE", HAS_XX, do_ble},
+	//{0177400, 0000100, "JMP", HAS_DD, do_jmp},
+	{0177700, 0005700, "TST", HAS_DD, do_tst},
+	{0177700, 0105700, "TSTb", HAS_DD + HAS_B, do_tstb},
+	/*{0177777, 0000257, "CCC", NO_PARAMS, do_ccc},
 	{0177777, 0000241, "CLC", NO_PARAMS, do_clc},
 	{0177777, 0000250, "CLN", NO_PARAMS, do_cln},
 	{0177777, 0000242, "CLV", NO_PARAMS, do_clv},
@@ -124,6 +124,25 @@ void do_beq(){
 	trace(TRACE1, "%06o\n", pc + 2 * xx.adr);
 	if (PSW & 4)
 		pc = pc + 2 * xx.adr;
+}
+void do_bpl(){
+	trace(TRACE1, "%06o\n", pc + 2 * xx.adr);
+	if (PSW & 8)
+		pc = pc + 2 * xx.adr;
+}
+void do_tst(){}
+void do_tstb(){
+	if(in_reg(dd.adr)){
+		w_write(dd.adr, ss.val >> 7 ? (ss.val & 0xff) | 0xff00 : ss.val & 0xff, in_reg(dd.adr));
+		PSW = psw(w_read(dd.adr, in_reg(dd.adr)), 0);
+	}
+	else{
+		printf(" %o ", dd.val);
+		b_write(dd.adr, ss.val, in_reg(dd.adr));
+		PSW = psw(dd.val, 0);
+	}
+
+	trace(TRACE1, " \t\t[%06o]=%03o\n", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
 }
 
 void do_nothing() {

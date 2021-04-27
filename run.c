@@ -119,7 +119,7 @@ Arg get_modereg(word w) {
 			}
 			break;
 		case 3:				//@(Rn)+; if n = 7 -> @#adr
-			res.adr = b.val ? b_read(reg[regi], in_reg(reg[regi])) : w_read(reg[regi], in_reg(reg[regi]));
+			res.adr = w_read(reg[regi], in_reg(reg[regi]));
 			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7){
 				reg[regi] = reg[regi] + 2;
@@ -147,7 +147,7 @@ Arg get_modereg(word w) {
 				reg[regi] = reg[regi] - 2;
 			else
 				reg[regi] = reg[regi] - (b.val ? 1 : 2);
-			res.adr = b.val ? b_read(reg[regi], in_reg(reg[regi])) : w_read(reg[regi], in_reg(reg[regi]));
+			res.adr = w_read(reg[regi], in_reg(reg[regi]));
 			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
 				trace(TRACE1, "@-(pc)");
@@ -167,7 +167,7 @@ Arg get_modereg(word w) {
 		case 7:				//@X(Rn); if n = 7 -> @adr
 			index = w_read(pc, in_reg(pc));
 			pc = pc + 2;
-			res.adr = b.val ? b_read(reg[regi] + index, in_reg(reg[regi] + index)) : w_read(reg[regi] + index, in_reg(reg[regi] + index));
+			res.adr = w_read(reg[regi] + index, in_reg(reg[regi] + index));
 			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
 				trace(TRACE1, "@%06o", res.adr);
