@@ -10,10 +10,10 @@ int current_log_level = INFO;
 
 void run();
 Arg get_modereg(word w);
-Arg get_addressR(word);
-Arg get_number(word);
-Arg get_b(word);
-Arg get_xx(word);
+Arg get_address(word w);
+Arg get_number(word w);
+Arg get_xx(word w);
+Arg get_b(word w);
 
 int main(int argc, char const *argv[]) {
 
@@ -53,7 +53,7 @@ void run() {
 				if((cmd.params & HAS_DD) == HAS_DD)
 					dd = get_modereg(w);
 				if((cmd.params & HAS_R) == HAS_R) {
-					r = get_addressR((w & 0777) >> 6);
+					r = get_address((w & 0777) >> 6);
 					trace(TRACE1, "R%o,", r.adr);
 				}
 				if((cmd.params & HAS_NN) == HAS_NN) {
@@ -192,12 +192,19 @@ Arg get_number(word w){
 	res.val = w;
 	return res;
 }
-Arg get_addressR(word w){
+Arg get_address(word w){
 	Arg res;
 	res.adr = w;
 	return res;
 }
-Arg get_xx(word w){}
+Arg get_xx(word w){
+	Arg res;
+	if ((w & 0xff) >> 7)
+		res.adr = (w & 0xff) | 0xff00;
+	else
+		res.adr = w & 0xff;
+	return res;
+}
 
 void trace(int log_level, const char * format, ...){
 	// никакой печати, если логирование ниже по уровню

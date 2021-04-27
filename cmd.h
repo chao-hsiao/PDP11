@@ -30,5 +30,7 @@ void do_add();
 void do_sob();
 void do_clr();
 void do_inc();
+void do_br();
+void do_beq();
 
 #endif
