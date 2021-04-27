@@ -27,6 +27,11 @@ extern word PSW;
 extern int counter;
 extern int current_log_level;
 
+#define ostat 0177564
+#define odata 0177566
+#define istat 0177560
+#define idata 0177562
+
 /*
 enum LOGLEVEL {
 	DEBUG = 1,	// debug messages

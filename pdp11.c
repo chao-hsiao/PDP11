@@ -23,7 +23,7 @@ byte b_read(adr a, int in_reg) {
 //byte write
 void b_write(adr a, byte val, int in_reg) {
 	if(in_reg)
-		reg[a] = val;
+		reg[a] = val >> 7 ? val | 0xff00 : val;
 	else
 		if(a % 2 == 0)
     		mem[a] = val;
@@ -75,7 +75,7 @@ void load_file(const char ** filename, int argc) {
 
 //yes or no to put in reg
 int in_reg(adr a) {
-	if(a < 8)
+	if(0 <= a && a < 8)
 		return 1;
 	return 0;
 }
@@ -117,6 +117,7 @@ int usage(const char ** argv, int argc) {
 	}
 	return 0;
 }
+
 
 
 /*

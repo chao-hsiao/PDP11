@@ -47,15 +47,16 @@ Command cmd;
 Arg b, ss, dd, nn, n, r, tt, xx;
 
 char * NZVC (word w);
+void trace2();
 
 void do_add() {
 	w_write(dd.adr, ss.val + dd.val, in_reg(dd.adr));
 	PSW = psw(ss.val, dd.val);
 	if (in_reg(dd.adr))
-		trace(TRACE1, " \t\t\tR%o=%06o R%o=%06o\n", ss.adr, ss.adr == dd.adr ? w_read(ss.adr, in_reg(ss.adr)) / 2 : w_read(ss.adr, in_reg(ss.adr)), dd.adr, w_read(dd.adr, in_reg(dd.adr)));
+		trace(TRACE1, "\t  R%o=%06o R%o=%06o\n", ss.adr, ss.adr == dd.adr ? w_read(ss.adr, in_reg(ss.adr)) / 2 : w_read(ss.adr, in_reg(ss.adr)), dd.adr, w_read(dd.adr, in_reg(dd.adr)));
 	else
-		trace(TRACE1, " \t\t[%06o]=%06o [%06o]=%06o\n", ss.adr, w_read(ss.adr, in_reg(ss.adr)), dd.adr, w_read(dd.adr, in_reg(dd.adr)));
-	trace(TRACE2, "---- 0:%06o 1:%06o 2:%06o 3:%06o 4:%06o 5:%06o S:%06o P:%06o\n", reg[0],reg[1],reg[2],reg[3],reg[4],reg[5],reg[6],reg[7]);
+		trace(TRACE1, "[%06o]=%06o [%06o]=%06o\n", ss.adr, w_read(ss.adr, in_reg(ss.adr)), dd.adr, w_read(dd.adr, in_reg(dd.adr)));
+	trace2();
 }
 
 void do_sob() {
@@ -65,48 +66,59 @@ void do_sob() {
 	}
 	else
 		trace(TRACE1, "%06o \n", pc - 2 * nn.val);
-	trace(TRACE2, "---- 0:%06o 1:%06o 2:%06o 3:%06o 4:%06o 5:%06o S:%06o P:%06o\n", reg[0],reg[1],reg[2],reg[3],reg[4],reg[5],reg[6],reg[7]);
+	trace2();
 }
 
 void do_inc() {
 	w_write(dd.adr, dd.val + 1, in_reg(dd.adr));
-	PSW = psw(dd.val, dd.val + 1);
+	PSW = psw(dd.val, 1);
 	if (in_reg(dd.adr))
-		trace(TRACE1, " \t\t\tR%o=%06o\n", dd.adr, w_read(dd.adr, in_reg(dd.adr)));
+		trace(TRACE1, "\tR%o=%06o\n", dd.adr, w_read(dd.adr, in_reg(dd.adr)));
 	else
-		trace(TRACE1, " \t\t[%06o]=%06o\n", dd.adr, w_read(dd.adr, in_reg(dd.adr)));
-	trace(TRACE2, "---- 0:%06o 1:%06o 2:%06o 3:%06o 4:%06o 5:%06o S:%06o P:%06o\n", reg[0],reg[1],reg[2],reg[3],reg[4],reg[5],reg[6],reg[7]);
+		trace(TRACE1, "\t[%06o]=%06o\n", dd.adr, w_read(dd.adr, in_reg(dd.adr)));
+	trace2();
 }
 
 void do_clr() {
 	reg[dd.adr] = 0;
+	PSW = psw(reg[dd.adr], 0);
 	trace(TRACE1, "\n");
-	trace(TRACE2, "---- 0:%06o 1:%06o 2:%06o 3:%06o 4:%06o 5:%06o S:%06o P:%06o\n", reg[0],reg[1],reg[2],reg[3],reg[4],reg[5],reg[6],reg[7]);
+	trace2();
 }
 
 void do_mov() {
 	w_write(dd.adr, ss.val, in_reg(dd.adr));
 	PSW = psw(ss.val, 0);
-	trace(TRACE1, " \t\t[%06o]=%06o\n", ss.adr, w_read(ss.adr, in_reg(ss.adr)));
-	trace(TRACE2, "---- 0:%06o 1:%06o 2:%06o 3:%06o 4:%06o 5:%06o S:%06o P:%06o\n", reg[0],reg[1],reg[2],reg[3],reg[4],reg[5],reg[6],reg[7]);
+	if(in_reg(ss.adr))
+		trace(TRACE1, "R%o=%06o\n", ss.adr, w_read(ss.adr, in_reg(ss.adr)));
+	else
+		trace(TRACE1, "[%06o]=%06o\n", ss.adr, w_read(ss.adr, in_reg(ss.adr)));
+	trace2();
 }
 void do_movb() {
-	if(in_reg(dd.adr)){
-		w_write(dd.adr, ss.val >> 7 ? (ss.val & 0xff) | 0xff00 : ss.val & 0xff, in_reg(dd.adr));
-		PSW = psw(w_read(dd.adr, in_reg(dd.adr)), 0);
+	b_write(dd.adr, ss.val, in_reg(dd.adr));
+	PSW = psw(ss.val >> 7 ? ss.val | 0xff00 : ss.val, 0);
+	if(in_reg(ss.adr)){
+		trace(TRACE1, "R%o=%03o", ss.adr, b_read(ss.adr, in_reg(ss.adr)));
+		if(dd.adr == odata){
+			trace(TRACE1, " [%06o] %c ", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
+			w_write(odata, 0000000, in_reg(odata));
+		}
 	}
 	else{
-		b_write(dd.adr, ss.val, in_reg(dd.adr));
-		PSW = psw(ss.val, 0);
+		trace(TRACE1, "[%06o]=%03o", ss.adr, b_read(ss.adr, in_reg(ss.adr)));
+		if(dd.adr == odata){
+			trace(TRACE1, " [%06o] %c ", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
+			w_write(odata, 0000000, in_reg(odata));
+		}
 	}
-
-	trace(TRACE1, " \t\t[%06o]=%03o\n", ss.adr, b_read(ss.adr, in_reg(ss.adr)));
-	trace(TRACE2, "---- 0:%06o 1:%06o 2:%06o 3:%06o 4:%06o 5:%06o S:%06o P:%06o\n", reg[0],reg[1],reg[2],reg[3],reg[4],reg[5],reg[6],reg[7]);
+	trace(TRACE1, "\n");
+	trace2();
 }
 
 void do_halt() {
 	trace(TRACE1, "THE_END\n");
-	trace(TRACE2, "---- 0:%06o 1:%06o 2:%06o 3:%06o 4:%06o 5:%06o S:%06o P:%06o\n", reg[0],reg[1],reg[2],reg[3],reg[4],reg[5],reg[6],reg[7]);
+	trace2();
 	printf("\n---------------- halted --------------\n");
 	printf("R0=%06o R2=%06o R4=%06o SP=%06o\n", reg[0],reg[2],reg[4],reg[6]);
 	printf("R1=%06o R3=%06o R5=%06o PC=%06o\n", reg[1],reg[3],reg[5],reg[7]);
@@ -117,32 +129,30 @@ void do_halt() {
 }
 
 void do_br(){
-	pc = pc + 2 * xx.adr;
+	pc = (pc + 2 * xx.adr) & 0xffff;
 	trace(TRACE1, "%06o\n", pc);
+	trace2();
 }
 void do_beq(){
-	trace(TRACE1, "%06o\n", pc + 2 * xx.adr);
-	if (PSW & 4)
-		pc = pc + 2 * xx.adr;
+	trace(TRACE1, "%06o\n", (pc + 2 * xx.adr) & 0xffff);
+	if (PSW & 4)	//if z = 1
+		pc = (pc + 2 * xx.adr) & 0xffff;	//do_br()
+	trace2();
 }
 void do_bpl(){
-	trace(TRACE1, "%06o\n", pc + 2 * xx.adr);
-	if (PSW & 8)
-		pc = pc + 2 * xx.adr;
+	trace(TRACE1, "%06o\n", (pc + 2 * xx.adr) & 0xffff);	
+	if ((PSW & 8) == 0)	//if n = 0
+		pc = (pc + 2 * xx.adr) & 0xffff;	//do_br()
+	trace2();
 }
 void do_tst(){}
 void do_tstb(){
-	if(in_reg(dd.adr)){
-		w_write(dd.adr, ss.val >> 7 ? (ss.val & 0xff) | 0xff00 : ss.val & 0xff, in_reg(dd.adr));
-		PSW = psw(w_read(dd.adr, in_reg(dd.adr)), 0);
-	}
-	else{
-		printf(" %o ", dd.val);
-		b_write(dd.adr, ss.val, in_reg(dd.adr));
-		PSW = psw(dd.val, 0);
-	}
-
-	trace(TRACE1, " \t\t[%06o]=%03o\n", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
+	PSW = psw(dd.val >> 7 ? dd.val | 0xff00 : dd.val, 0);
+	if (in_reg(dd.adr))
+		trace(TRACE1, "R%o=%03o\n", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
+	else
+		trace(TRACE1, "[%06o]=%03o\n", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
+	trace2();
 }
 
 void do_nothing() {
@@ -192,6 +202,10 @@ char * NZVC (word w) {
 	return res;
 }
 
+void trace2(){
+	trace(TRACE2, "---- 0:%06o 1:%06o 2:%06o 3:%06o 4:%06o 5:%06o S:%06o P:%06o\n", reg[0],reg[1],reg[2],reg[3],reg[4],reg[5],reg[6],reg[7]);
+	//printf("psw=%06o: [%d]\n", PSW, counter);
+}
 
 
 

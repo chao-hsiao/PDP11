@@ -20,7 +20,7 @@ int main(int argc, char const *argv[]) {
 	if(usage(argv, argc))
 		return 1;
 	load_file(argv, argc - 1);
-	//mem_dump(0x200,0xc);
+	//mem_dump(0x200,0xe);
 
 	printf("\n---------------- running --------------\n");
 
@@ -30,6 +30,13 @@ int main(int argc, char const *argv[]) {
 }
 
 void run() {
+	w_write(ostat, 0000200, in_reg(ostat));
+	//w_write(odata, 0000000, in_reg(odata));
+	//w_write(0177776, 0014347, in_reg(0177776));
+	w_write(0177774, 0000000, in_reg(0177774));
+	//w_write(0177560, , in_reg(0177560));
+	//w_write(0177562, , in_reg(0177562));
+
 	pc = 01000;
 
 	while(1) {
@@ -50,8 +57,10 @@ void run() {
 					ss = get_modereg(w >> 6);
 					trace(TRACE1, ",");
 				}
-				if((cmd.params & HAS_DD) == HAS_DD)
+				if((cmd.params & HAS_DD) == HAS_DD){
 					dd = get_modereg(w);
+					trace(TRACE1, " \t  ");
+				}
 				if((cmd.params & HAS_R) == HAS_R) {
 					r = get_address((w & 0777) >> 6);
 					trace(TRACE1, "R%o,", r.adr);
@@ -92,9 +101,11 @@ Arg get_modereg(word w) {
 	switch (mode) {
 		case 0:				//Rn
 			res.adr = regi;
-			res.val = reg[regi];
+			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
-				trace(TRACE1, "pc");
+				trace(TRACE1, "PC");
+			else if (regi == 6)
+				trace(TRACE1, "SP");
 			else
 				trace(TRACE1, "R%o", regi);
 			break;
@@ -102,7 +113,9 @@ Arg get_modereg(word w) {
 			res.adr = reg[regi];
 			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
-				trace(TRACE1, "(pc)", regi);
+				trace(TRACE1, "(PC)");
+			else if (regi == 6)
+				trace(TRACE1, "(SP)");
 			else
 				trace(TRACE1, "(R%o)", regi);
 			break;
@@ -113,6 +126,10 @@ Arg get_modereg(word w) {
 				reg[regi] = reg[regi] + 2;
 				trace(TRACE1, "#%06o", res.val);
 			}
+			else if (regi == 6){
+				reg[regi] = reg[regi] + 2;
+				trace(TRACE1, "(SP)+");
+			}
 			else{
 				reg[regi] = reg[regi] + (b.val ? 1 : 2);
 				trace(TRACE1, "(R%o)+", regi);
@@ -121,36 +138,36 @@ Arg get_modereg(word w) {
 		case 3:				//@(Rn)+; if n = 7 -> @#adr
 			res.adr = w_read(reg[regi], in_reg(reg[regi]));
 			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
-			if (regi == 7){
-				reg[regi] = reg[regi] + 2;
+			reg[regi] = reg[regi] + 2;
+			if (regi == 7)
 				trace(TRACE1, "@#%06o", res.adr);
-			}
-			else{
-				reg[regi] = reg[regi] + (b.val ? 1 : 2);
+			else if (regi == 6)
+				trace(TRACE1, "@(SP)+");
+			else
 				trace(TRACE1, "@(R%o)+", regi);
-			}
 			break;
 		case 4:				//-(Rn)
-			if (regi == 7)
+			if (regi == 7 & regi == 6)
 				reg[regi] = reg[regi] - 2;
 			else
 				reg[regi] = reg[regi] - (b.val ? 1 : 2);
 			res.adr = reg[regi];
 			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));	
 			if (regi == 7)
-				trace(TRACE1, "-(pc)");
+				trace(TRACE1, "-(PC)");
+			else if (regi == 6)
+				trace(TRACE1, "-(SP)");
 			else
 				trace(TRACE1, "-(R%o)", regi);
 			break;
 		case 5:				//@-(Rn)
-			if (regi == 7)
-				reg[regi] = reg[regi] - 2;
-			else
-				reg[regi] = reg[regi] - (b.val ? 1 : 2);
+			reg[regi] = reg[regi] - 2;
 			res.adr = w_read(reg[regi], in_reg(reg[regi]));
 			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
-				trace(TRACE1, "@-(pc)");
+				trace(TRACE1, "@-(PC)");
+			else if(regi == 6)
+				trace(TRACE1, "@-(SP)");
 			else
 				trace(TRACE1, "@-(R%o)", regi);
 			break;
@@ -161,8 +178,10 @@ Arg get_modereg(word w) {
 			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
 				trace(TRACE1, "%06o ", res.adr);
+			else if (regi == 6)
+				trace(TRACE1, "%o(SP)", index);
 			else
-				trace(TRACE1, "%o(R%o)", index, regi);
+				trace(TRACE1, "%06o(R%o)", index, regi);
 			break;
 		case 7:				//@X(Rn); if n = 7 -> @adr
 			index = w_read(pc, in_reg(pc));
@@ -171,6 +190,8 @@ Arg get_modereg(word w) {
 			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
 				trace(TRACE1, "@%06o", res.adr);
+			else if (regi == 6)
+				trace(TRACE1, "@%o(SP)", index);
 			else
 				trace(TRACE1, "@%o(R%o)", index, regi);
 			break;
