@@ -73,7 +73,7 @@ void do_inc() {
 	w_write(dd.adr, dd.val + 1, in_reg(dd.adr));
 	PSW = psw(dd.val, 1);
 	if (in_reg(dd.adr))
-		trace(TRACE1, "\tR%o=%06o\n", dd.adr, w_read(dd.adr, in_reg(dd.adr)));
+		trace(TRACE1, "\t  R%o=%06o\n", dd.adr, w_read(dd.adr, in_reg(dd.adr)));
 	else
 		trace(TRACE1, "\t[%06o]=%06o\n", dd.adr, w_read(dd.adr, in_reg(dd.adr)));
 	trace2();

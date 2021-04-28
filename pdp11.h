@@ -9,6 +9,7 @@ typedef word adr;					//16 bit
 #define MEMSIZE (64 * 1024)
 #define REGSIZE 8
 #define pc reg[7]
+#define sp reg[6]
 
 #define NO_PARAMS 0
 #define HAS_DD 1
