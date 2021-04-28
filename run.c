@@ -53,6 +53,18 @@ void run() {
 				if(cmd.params == NO_PARAMS) {}
 				if((cmd.params & HAS_B) == HAS_B)
 					b = get_b(w >> 15);
+				if((cmd.params & HAS_R) == HAS_R) {
+					if(cmd.opcode == 0000200)
+						r = get_address(w & 7);
+					else
+						r = get_address((w & 0777) >> 6);
+					if(r.adr == 7)
+						trace(TRACE1, "PC,");
+					else if(r.adr == 6)
+						trace(TRACE1, "SP,");
+					else
+						trace(TRACE1, "R%o,", r.adr);
+				}
 				if((cmd.params & HAS_SS) == HAS_SS) {
 					ss = get_modereg(w >> 6);
 					trace(TRACE1, ",");
@@ -60,10 +72,6 @@ void run() {
 				if((cmd.params & HAS_DD) == HAS_DD){
 					dd = get_modereg(w);
 					trace(TRACE1, " \t  ");
-				}
-				if((cmd.params & HAS_R) == HAS_R) {
-					r = get_address((w & 0777) >> 6);
-					trace(TRACE1, "R%o,", r.adr);
 				}
 				if((cmd.params & HAS_NN) == HAS_NN) {
 					nn = get_number(w & 077);
@@ -123,11 +131,11 @@ Arg get_modereg(word w) {
 			res.adr = reg[regi];
 			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7){
-				reg[regi] = reg[regi] + 2;
+				pc = pc + 2;
 				trace(TRACE1, "#%06o", res.val);
 			}
 			else if (regi == 6){
-				reg[regi] = reg[regi] + 2;
+				sp = sp + 2;
 				trace(TRACE1, "(SP)+");
 			}
 			else{

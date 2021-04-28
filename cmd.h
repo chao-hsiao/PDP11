@@ -35,5 +35,10 @@ void do_beq();
 void do_bpl();
 void do_tst();
 void do_tstb();
+void do_rts();
+void do_jsr();
+void do_jmp();
+void do_com();
+void do_comb();
 
 #endif
