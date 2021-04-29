@@ -59,15 +59,20 @@ void run() {
 					else
 						r = get_address((w & 0777) >> 6);
 					if(r.adr == 7)
-						trace(TRACE1, "PC,");
+						trace(TRACE1, "PC");
 					else if(r.adr == 6)
-						trace(TRACE1, "SP,");
+						trace(TRACE1, "SP");
 					else
-						trace(TRACE1, "R%o,", r.adr);
+						trace(TRACE1, "R%o", r.adr);
+					if(cmd.opcode != 0000200)
+						trace(TRACE1, ",");
 				}
 				if((cmd.params & HAS_SS) == HAS_SS) {
 					ss = get_modereg(w >> 6);
-					trace(TRACE1, ",");
+					if(cmd.mask == 0170000)
+						trace(TRACE1, ",");
+					else
+						trace(TRACE1, " \t  ");
 				}
 				if((cmd.params & HAS_DD) == HAS_DD){
 					dd = get_modereg(w);
@@ -85,6 +90,7 @@ void run() {
 				}
 				if((cmd.params & HAS_XX) == HAS_XX) {
 					xx = get_xx(w);
+					trace(TRACE1, "%06o\n", pc + 2 * xx.x);
 				}
 				
 				b.val = 0;
@@ -168,6 +174,7 @@ Arg get_modereg(word w) {
 			else
 				trace(TRACE1, "-(R%o)", regi);
 			break;
+
 		case 5:				//@-(Rn)
 			reg[regi] = reg[regi] - 2;
 			res.adr = w_read(reg[regi], in_reg(reg[regi]));
@@ -187,7 +194,7 @@ Arg get_modereg(word w) {
 			if (regi == 7)
 				trace(TRACE1, "%06o ", res.adr);
 			else if (regi == 6)
-				trace(TRACE1, "%o(SP)", index);
+				trace(TRACE1, "%06o(SP)", index);
 			else
 				trace(TRACE1, "%06o(R%o)", index, regi);
 			break;
@@ -199,9 +206,9 @@ Arg get_modereg(word w) {
 			if (regi == 7)
 				trace(TRACE1, "@%06o", res.adr);
 			else if (regi == 6)
-				trace(TRACE1, "@%o(SP)", index);
+				trace(TRACE1, "@%06o(SP)", index);
 			else
-				trace(TRACE1, "@%o(R%o)", index, regi);
+				trace(TRACE1, "@%06o(R%o)", index, regi);
 			break;
 		default:
 			fprintf(stderr, "Mode %o is not created yet\n", mode);
@@ -228,10 +235,7 @@ Arg get_address(word w){
 }
 Arg get_xx(word w){
 	Arg res;
-	if ((w & 0xff) >> 7)
-		res.adr = (w & 0xff) | 0xff00;
-	else
-		res.adr = w & 0xff;
+	res.x = w;
 	return res;
 }
 

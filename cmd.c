@@ -7,29 +7,83 @@
 #include <errno.h>
 
 Command command[] = {
-	{0170000, 0010000, "MOV", HAS_DD + HAS_SS, do_mov},
+	{0170000, 0010000, "MOV", HAS_DD + HAS_SS, do_mov},				//dd+ss //0
 	{0170000, 0110000, "MOVb", HAS_DD + HAS_SS + HAS_B, do_movb},
 	{0170000, 0060000, "ADD", HAS_DD + HAS_SS, do_add},
-	{0177000, 0077000, "SOB", HAS_R + HAS_NN, do_sob},
-	{0177700, 0005200, "INC", HAS_DD, do_inc},
-	//{0170000, 0020000, "CMP", HAS_DD + HAS_SS, do_cmp},
-	//{0170000, 0120000, "CMPb", HAS_DD + HAS_SS + HAS_B, do_cmpb},
-//	{0177700, 0005100, "COM", HAS_DD, do_com},
-//	{0177700, 0105100, "COMb", HAS_DD + HAS_B, do_comb},
-	{0177400, 0000400, "BR", HAS_XX, do_br},
-	{0177400, 0001400, "BEQ", HAS_XX, do_beq},
-	//{0177400, 0001000, "BNE", HAS_XX, do_bne},
-	//{0177400, 0100400, "BMI", HAS_XX, do_bmi},
-	{0177400, 0100000, "BPL", HAS_XX, do_bpl},
-	//{0177400, 0002400, "BLT", HAS_XX, do_blt},
-	//{0177400, 0002000, "BGE", HAS_XX, do_bge},
-	//{0177400, 0003400, "BLE", HAS_XX, do_ble},
-	{0177400, 0000100, "JMP", HAS_DD, do_jmp},
-	{0177000, 0004000, "JSR", HAS_DD + HAS_R, do_jsr},
-	{0177770, 0000200, "RTS", HAS_R, do_rts},
+	{0170000, 0160000, "SUB", HAS_DD + HAS_SS, do_sub},
+	{0170000, 0020000, "CMP", HAS_DD + HAS_SS, do_cmp},
+	{0170000, 0120000, "CMPb", HAS_DD + HAS_SS + HAS_B, do_cmpb},
+	{0170000, 0040000, "BIC", HAS_DD + HAS_SS, do_bic},
+	{0170000, 0140000, "BICb", HAS_DD + HAS_SS + HAS_B, do_bicb},
+	{0170000, 0050000, "BIS", HAS_DD + HAS_SS, do_bis},
+	{0170000, 0150000, "BISb", HAS_DD + HAS_SS + HAS_B, do_bisb},
+	{0170000, 0030000, "BIT", HAS_DD + HAS_SS, do_bit},
+	{0170000, 0130000, "BITb", HAS_DD + HAS_SS + HAS_B, do_bitb},			//11
+
+	{0177000, 0070000, "MUL", HAS_R + HAS_SS, do_mul},				//r+ss  //12
+	{0177000, 0071000, "DIV", HAS_R + HAS_SS, do_div},
+	{0177000, 0072000, "ASH", HAS_R + HAS_SS, do_ash},
+	{0177000, 0073000, "ASHC", HAS_R + HAS_SS, do_ashc},
+	{0177000, 0073000, "XOR", HAS_R + HAS_SS, do_xor},						//16
+
+	{0177400, 0000100, "JMP", HAS_DD, do_jmp},						//dd 	//17
+	{0177700, 0006100, "ROL", HAS_DD, do_rol},
+	{0177700, 0106100, "ROLb", HAS_DD + HAS_B, do_rolb},
+	{0177700, 0006000, "ROR", HAS_DD, do_ror},
+	{0177700, 0106000, "RORb", HAS_DD, do_rorb},
+	{0177700, 0005100, "COM", HAS_DD, do_com},
+	{0177700, 0105100, "COMb", HAS_DD + HAS_B, do_comb},
+	{0177400, 0005500, "ADC", HAS_DD, do_adc},
+	{0177400, 0105500, "ADCb", HAS_DD + HAS_B, do_adcb},
+	{0177400, 0006300, "ASL", HAS_DD, do_asl},
+	{0177400, 0106300, "ASLb", HAS_DD + HAS_B, do_aslb},
+	{0177400, 0006200, "ASR", HAS_DD, do_asr},
+	{0177400, 0106200, "ASRb", HAS_DD + HAS_B, do_asrb},
+	{0177700, 0005000, "CLR", HAS_DD, do_clr},
+	{0177700, 0105000, "CLRb", HAS_DD + HAS_B, do_clrb},
 	{0177700, 0005700, "TST", HAS_DD, do_tst},
 	{0177700, 0105700, "TSTb", HAS_DD + HAS_B, do_tstb},
-	/*{0177777, 0000257, "CCC", NO_PARAMS, do_ccc},
+	{0177400, 0005300, "DEC", HAS_DD, do_dec},
+	{0177400, 0105300, "DECb", HAS_DD + HAS_B, do_decb},
+	{0177700, 0005200, "INC", HAS_DD, do_inc},
+	{0177700, 0105200, "INCb", HAS_DD + HAS_B, do_incb},
+	{0177400, 0005400, "NEG", HAS_DD, do_neg},
+	{0177400, 0105400, "NEGb", HAS_DD + HAS_B, do_negb},
+	{0177400, 0005600, "SBC", HAS_DD, do_sbc},
+	{0177400, 0105600, "SBCb", HAS_DD, do_sbcs},
+	{0177400, 0000300, "SWAB", HAS_DD, do_swab},
+	{0177400, 0006700, "SXT", HAS_DD, do_sxt},								//43
+	{0177400, 0106400, "MTPS", HAS_DD, do_mtps},
+	{0177400, 0006500, "MFPI", HAS_DD, do_mfpi},
+	{0177400, 0106500, "MFPD", HAS_DD, do_mfpd},
+	{0177400, 0006600, "MTPI", HAS_DD, do_mtpi},
+	{0177400, 0106600, "MTPD", HAS_DD, do_mtpd},							//48
+
+	{0177400, 0000400, "BR", HAS_XX, do_br},						//xx 	//49
+	{0177400, 0001400, "BEQ", HAS_XX, do_beq},
+	{0177400, 0001000, "BNE", HAS_XX, do_bne},
+	{0177400, 0100400, "BMI", HAS_XX, do_bmi},
+	{0177400, 0100000, "BPL", HAS_XX, do_bpl},
+	{0177400, 0002400, "BLT", HAS_XX, do_blt},
+	{0177400, 0002000, "BGE", HAS_XX, do_bge},
+	{0177400, 0003400, "BLE", HAS_XX, do_ble},
+	{0177400, 0103000, "BCC", HAS_XX, do_bcc},
+	{0177400, 0103400, "BCS", HAS_XX, do_bcs},
+	{0177400, 0003000, "BGT", HAS_XX, do_bgt},
+	{0177400, 0101000, "BHI", HAS_XX, do_bhi},
+	{0177400, 0103000, "BHIS", HAS_XX, do_bhis},
+	{0177400, 0103400, "BLO", HAS_XX, do_blo},
+	{0177400, 0101400, "BLOS", HAS_XX, do_blos},
+	{0177400, 0102000, "BVC", HAS_XX, do_bvc},
+	{0177400, 0102400, "BVS", HAS_XX, do_bvs},								//65
+
+	{0177000, 0077000, "SOB", HAS_R + HAS_NN, do_sob},				//r+nn 	//66
+
+	{0177000, 0004000, "JSR", HAS_R + HAS_DD, do_jsr},				//r+dd  //67
+
+	{0177770, 0000200, "RTS", HAS_R, do_rts},								//68
+
+	{0177777, 0000257, "CCC", NO_PARAMS, do_ccc},					//nzvc
 	{0177777, 0000241, "CLC", NO_PARAMS, do_clc},
 	{0177777, 0000250, "CLN", NO_PARAMS, do_cln},
 	{0177777, 0000242, "CLV", NO_PARAMS, do_clv},
@@ -39,10 +93,13 @@ Command command[] = {
 	{0177777, 0000244, "SEN", NO_PARAMS, do_sen},
 	{0177777, 0000244, "SEV", NO_PARAMS, do_sev},
 	{0177777, 0000244, "SEZ", NO_PARAMS, do_sez},
-	{0177777, 0000240, "NOP", NO_PARAMS, do_nop},*/
-	{0177700, 0005000, "CLR", HAS_DD, do_clr},
+	{0177777, 0000240, "NOP", NO_PARAMS, do_nop},
+
 	{0177777, 0000000, "HALT", NO_PARAMS, do_halt},
-	{0000000, 0000000, "NOTHING", 0, do_nothing} // MUST LAST
+	{0177777, 0000001, "WAIT", NO_PARAMS, do_wait},
+	{0177777, 0000005, "RESET", NO_PARAMS, do_reset},
+
+	{0000000, 0000000, "NOTHING", NO_PARAMS, do_nothing} // MUST LAST
 };
 
 Command cmd;
@@ -54,20 +111,31 @@ void trace2();
 void do_add() {
 	w_write(dd.adr, ss.val + dd.val, in_reg(dd.adr));
 	PSW = psw(ss.val, dd.val);
-	if (in_reg(dd.adr))
-		trace(TRACE1, "\t  R%o=%06o R%o=%06o\n", ss.adr, ss.adr == dd.adr ? w_read(ss.adr, in_reg(ss.adr)) / 2 : w_read(ss.adr, in_reg(ss.adr)), dd.adr, w_read(dd.adr, in_reg(dd.adr)));
+	
+	if(in_reg(ss.adr))
+		trace(TRACE1, " \t  R%o=%06o", ss.adr, w_read(ss.adr, in_reg(ss.adr)));
 	else
-		trace(TRACE1, "[%06o]=%06o [%06o]=%06o\n", ss.adr, w_read(ss.adr, in_reg(ss.adr)), dd.adr, w_read(dd.adr, in_reg(dd.adr)));
+		trace(TRACE1, "[%06o]=%06o", ss.adr, w_read(ss.adr, in_reg(ss.adr)));
+
+	if(in_reg(dd.adr))
+		trace(TRACE1, " R%o=%06o", dd.adr, w_read(dd.adr, in_reg(dd.adr)));
+	else
+		trace(TRACE1, " [%06o]=%06o", dd.adr, w_read(dd.adr, in_reg(dd.adr)));
+
+	trace(TRACE1, "\n");
 	trace2();
+}
+void do_sub(){
+	trace(TRACE1, "the command has not been built\n");
 }
 
 void do_sob() {
 	if (--reg[r.adr] != 0){
 		pc = pc - 2 * nn.val;
-		trace(TRACE1, "R%o,%06o \n", r.adr, pc);
+		trace(TRACE1, "%06o \n", r.adr, pc);
 	}
 	else
-		trace(TRACE1, "R%o,%06o \n", r.adr, pc - 2 * nn.val);
+		trace(TRACE1, "%06o \n", r.adr, pc - 2 * nn.val);
 	trace2();
 }
 
@@ -80,6 +148,9 @@ void do_inc() {
 		trace(TRACE1, "\t[%06o]=%06o\n", dd.adr, w_read(dd.adr, in_reg(dd.adr)));
 	trace2();
 }
+void do_incb(){
+	trace(TRACE1, "the command has not been built\n");
+}
 
 void do_clr() {
 	reg[dd.adr] = 0;
@@ -87,44 +158,39 @@ void do_clr() {
 	trace(TRACE1, "\n");
 	trace2();
 }
+void do_clrb(){
+	trace(TRACE1, "the command has not been built\n");
+}
 
 void do_mov() {
 	w_write(dd.adr, ss.val, in_reg(dd.adr));
 	PSW = psw(ss.val, 0) | (PSW & 1);
-	if(in_reg(ss.adr)){
-		trace(TRACE1, "R%o=%06o", ss.adr, w_read(ss.adr, in_reg(ss.adr)));
-		if(dd.adr == odata){
-			trace(TRACE1, " [%06o] %c ", dd.adr, w_read(dd.adr, in_reg(dd.adr)));
-			w_write(odata, 0000000, in_reg(odata));
-		}
-	}
-	else{
+	if(in_reg(ss.adr))
+		trace(TRACE1, "\t  R%o=%06o", ss.adr, w_read(ss.adr, in_reg(ss.adr)));
+	else
 		trace(TRACE1, "[%06o]=%06o", ss.adr, w_read(ss.adr, in_reg(ss.adr)));
-		if(dd.adr == odata){
-			trace(TRACE1, " [%06o] %c ", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
-			w_write(odata, 0000000, in_reg(odata));
-		}
-	}
+
+	if(in_reg(dd.adr) == 0)
+		trace(TRACE1, " [%06o]", dd.adr);
+	if(dd.adr == odata)
+		trace(TRACE1, " %c ", w_read(dd.adr, in_reg(dd.adr)));
+		//w_write(odata, 0000000, in_reg(odata));
+
 	trace(TRACE1, "\n");
 	trace2();
 }
 void do_movb() {
 	b_write(dd.adr, ss.val, in_reg(dd.adr));
 	PSW = psw(ss.val >> 7 ? ss.val | 0xff00 : ss.val, 0) | (PSW & 1);
-	if(in_reg(ss.adr)){
-		trace(TRACE1, "R%o=%03o", ss.adr, b_read(ss.adr, in_reg(ss.adr)));
-		if(dd.adr == odata){
-			trace(TRACE1, " [%06o] %c ", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
-			w_write(odata, 0000000, in_reg(odata));
-		}
-	}
-	else{
+	if(in_reg(ss.adr))
+		trace(TRACE1, "\t  R%o=%03o", ss.adr, b_read(ss.adr, in_reg(ss.adr)));
+	else
 		trace(TRACE1, "[%06o]=%03o", ss.adr, b_read(ss.adr, in_reg(ss.adr)));
-		if(dd.adr == odata){
-			trace(TRACE1, " [%06o] %c ", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
-			w_write(odata, 0000000, in_reg(odata));
-		}
-	}
+
+	if(dd.adr == odata)
+		trace(TRACE1, " [%06o] %c ", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
+		//w_write(odata, 0000000, in_reg(odata));
+
 	trace(TRACE1, "\n");
 	trace2();
 }
@@ -142,30 +208,56 @@ void do_halt() {
 }
 
 void do_br(){
-	pc = (pc + 2 * xx.adr) & 0xffff;
-	trace(TRACE1, "%06o\n", pc);
+	//pc = (pc + 2 * xx.x) & 0xffff;
+	pc = pc + 2 * xx.x;
 	trace2();
 }
 void do_beq(){
-	trace(TRACE1, "%06o\n", (pc + 2 * xx.adr) & 0xffff);
 	if (PSW & 4)	//if z = 1
-		pc = (pc + 2 * xx.adr) & 0xffff;	//do_br()
-	trace2();
+		do_br();
+	else
+		trace2();
 }
-void do_bpl(){
-	trace(TRACE1, "%06o\n", (pc + 2 * xx.adr) & 0xffff);	
+void do_bpl(){	
 	if ((PSW & 8) == 0)	//if n = 0
-		pc = (pc + 2 * xx.adr) & 0xffff;	//do_br()
-	trace2();
+		do_br();
+	else
+		trace2();
 }
-void do_tst(){}
+void do_tst(){
+	PSW = psw(dd.val, 0);
+	if (in_reg(dd.adr))
+		trace(TRACE1, "R%o=%06o\n", dd.adr, dd.val);
+	else
+		trace(TRACE1, "[%06o]=%06o\n", dd.adr, dd.val);
+	trace2();
+
+}
 void do_tstb(){
 	PSW = psw(dd.val >> 7 ? dd.val | 0xff00 : dd.val, 0);
 	if (in_reg(dd.adr))
-		trace(TRACE1, "R%o=%03o\n", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
+		trace(TRACE1, "R%o=%03o\n", dd.adr, dd.val);
 	else
-		trace(TRACE1, "[%06o]=%03o\n", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
+		trace(TRACE1, "[%06o]=%03o\n", dd.adr, dd.val);
 	trace2();
+}
+
+void do_rol(){
+	dd.val = (dd.val << 1) & 0xffff;
+	w_write(dd.adr, dd.val, in_reg(dd.adr));
+	if (in_reg(dd.adr))
+		trace(TRACE1, "R%o=%06o\n", dd.adr, dd.val);
+	else
+		trace(TRACE1, "[%06o]=%06o\n", dd.adr, dd.val);
+}
+void do_rolb(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_ror(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_rorb(){
+	trace(TRACE1, "the command has not been built\n");
 }
 
 void do_rts(){
@@ -187,16 +279,200 @@ void do_jmp(){
 	pc = dd.adr;
 	trace2();
 }
-/*
+
 void do_com(){
-	dd.adr = ~ dd.adr;
+	trace(TRACE1, "the command has not been built\n");
+/*	dd.adr = ~ dd.adr;
 	PSW = psw(dd.adr, 0) | 1;
-	trace2();
+	trace2();*/
 }
-void do_cobm(){
-	dd.adr = ~ dd.adr;
+void do_comb(){
+	trace(TRACE1, "the command has not been built\n");
+//	dd.adr = ~ dd.adr;
 }
-*/
+
+void do_cmp(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_cmpb(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bic(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bicb(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bis(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bisb(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bit(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bitb(){
+	trace(TRACE1, "the command has not been built\n");
+}
+
+void do_mul(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_div(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_ash(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_ashc(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_xor(){
+	trace(TRACE1, "the command has not been built\n");
+}
+
+void do_adc(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_adcb(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_asl(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_aslb(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_asr(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_asrb(){
+	trace(TRACE1, "the command has not been built\n");
+}
+
+void do_dec(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_decb(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_neg(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_negb(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_sbc(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_sbcs(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_swab(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_sxt(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_mtps(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_mfpi(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_mfpd(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_mtpi(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_mtpd(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bne(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bmi(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_blt(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bge(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_ble(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bcc(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bcs(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bgt(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bhi(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bhis(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_blo(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_blos(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bvc(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_bvs(){
+	trace(TRACE1, "the command has not been built\n");
+}
+
+void do_ccc(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_clc(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_cln(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_clv(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_clz(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_scc(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_sec(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_sen(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_sev(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_sez(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_nop(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_wait(){
+	trace(TRACE1, "the command has not been built\n");
+}
+void do_reset(){
+	trace(TRACE1, "the command has not been built\n");
+}
+
 void do_nothing() {
 	trace(TRACE1, "\n");
 }

@@ -27,6 +27,7 @@ extern word reg[REGSIZE];
 extern word PSW;
 extern int counter;
 extern int current_log_level;
+//extern int str;
 
 #define ostat 0177564
 #define odata 0177566

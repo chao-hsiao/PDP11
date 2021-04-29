@@ -9,6 +9,7 @@ word mem[MEMSIZE];	//RAM
 word reg[REGSIZE];	//registers
 word PSW;			//process state word(слово состояния процессор)
 int counter = 0;
+//int str;
 
 //byte read
 byte b_read(adr a, int in_reg) {
@@ -117,7 +118,6 @@ int usage(const char ** argv, int argc) {
 	}
 	return 0;
 }
-
 
 
 /*
