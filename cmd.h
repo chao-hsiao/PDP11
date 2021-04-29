@@ -17,11 +17,16 @@ typedef struct {
 } Arg;
 
 extern Arg b, ss, dd, nn, n, r, tt, xx;
-
 extern Command command[];
 extern Command cmd;
 
 word psw(word w0, word w1);
+int flag_N();
+int flag_Z();
+int flag_V();
+int flag_C();
+char * NZVC ();
+void trace2();
 
 void do_mov();
 void do_movb();

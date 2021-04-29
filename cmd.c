@@ -105,9 +105,38 @@ Command command[] = {
 Command cmd;
 Arg b, ss, dd, nn, n, r, tt, xx;
 
-char * NZVC (word w);
-void trace2();
+void do_mov() {
+	w_write(dd.adr, ss.val, in_reg(dd.adr));
+	PSW = psw(ss.val, 0) | (PSW & 1);
+	if(in_reg(ss.adr))
+		trace(TRACE1, "\t  R%o=%06o", ss.adr, w_read(ss.adr, in_reg(ss.adr)));
+	else
+		trace(TRACE1, "[%06o]=%06o", ss.adr, w_read(ss.adr, in_reg(ss.adr)));
 
+	if(in_reg(dd.adr) == 0)
+		trace(TRACE1, " [%06o]", dd.adr);
+	if(dd.adr == odata)
+		trace(TRACE1, " %c ", w_read(dd.adr, in_reg(dd.adr)));
+		//w_write(odata, 0000000, in_reg(odata));
+
+	trace(TRACE1, "\n");
+	trace2();
+}
+void do_movb() {
+	b_write(dd.adr, ss.val, in_reg(dd.adr));
+	PSW = psw(ss.val >> 7 ? ss.val | 0xff00 : ss.val, 0) | (PSW & 1);
+	if(in_reg(ss.adr))
+		trace(TRACE1, "\t  R%o=%03o", ss.adr, b_read(ss.adr, in_reg(ss.adr)));
+	else
+		trace(TRACE1, "[%06o]=%03o", ss.adr, b_read(ss.adr, in_reg(ss.adr)));
+
+	if(dd.adr == odata)
+		trace(TRACE1, " [%06o] %c ", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
+		//w_write(odata, 0000000, in_reg(odata));
+
+	trace(TRACE1, "\n");
+	trace2();
+}
 void do_add() {
 	w_write(dd.adr, ss.val + dd.val, in_reg(dd.adr));
 	PSW = psw(ss.val, dd.val);
@@ -162,68 +191,18 @@ void do_clrb(){
 	trace(TRACE1, "the command has not been built\n");
 }
 
-void do_mov() {
-	w_write(dd.adr, ss.val, in_reg(dd.adr));
-	PSW = psw(ss.val, 0) | (PSW & 1);
-	if(in_reg(ss.adr))
-		trace(TRACE1, "\t  R%o=%06o", ss.adr, w_read(ss.adr, in_reg(ss.adr)));
-	else
-		trace(TRACE1, "[%06o]=%06o", ss.adr, w_read(ss.adr, in_reg(ss.adr)));
-
-	if(in_reg(dd.adr) == 0)
-		trace(TRACE1, " [%06o]", dd.adr);
-	if(dd.adr == odata)
-		trace(TRACE1, " %c ", w_read(dd.adr, in_reg(dd.adr)));
-		//w_write(odata, 0000000, in_reg(odata));
-
-	trace(TRACE1, "\n");
-	trace2();
-}
-void do_movb() {
-	b_write(dd.adr, ss.val, in_reg(dd.adr));
-	PSW = psw(ss.val >> 7 ? ss.val | 0xff00 : ss.val, 0) | (PSW & 1);
-	if(in_reg(ss.adr))
-		trace(TRACE1, "\t  R%o=%03o", ss.adr, b_read(ss.adr, in_reg(ss.adr)));
-	else
-		trace(TRACE1, "[%06o]=%03o", ss.adr, b_read(ss.adr, in_reg(ss.adr)));
-
-	if(dd.adr == odata)
-		trace(TRACE1, " [%06o] %c ", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
-		//w_write(odata, 0000000, in_reg(odata));
-
-	trace(TRACE1, "\n");
-	trace2();
-}
-
 void do_halt() {
 	trace(TRACE1, "THE_END\n");
 	trace2();
 	printf("\n---------------- halted --------------\n");
 	printf("R0=%06o R2=%06o R4=%06o SP=%06o\n", reg[0],reg[2],reg[4],reg[6]);
 	printf("R1=%06o R3=%06o R5=%06o PC=%06o\n", reg[1],reg[3],reg[5],reg[7]);
-	char * nzvc = NZVC(PSW);
+	char * nzvc = NZVC();
 	printf("psw=%06o: cm=k pm=k pri=0   %s [%d]\n", PSW, nzvc, counter);
 	free(nzvc);
 	exit(0);
 }
 
-void do_br(){
-	//pc = (pc + 2 * xx.x) & 0xffff;
-	pc = pc + 2 * xx.x;
-	trace2();
-}
-void do_beq(){
-	if (PSW & 4)	//if z = 1
-		do_br();
-	else
-		trace2();
-}
-void do_bpl(){	
-	if ((PSW & 8) == 0)	//if n = 0
-		do_br();
-	else
-		trace2();
-}
 void do_tst(){
 	PSW = psw(dd.val, 0);
 	if (in_reg(dd.adr))
@@ -390,17 +369,46 @@ void do_mtpi(){
 void do_mtpd(){
 	trace(TRACE1, "the command has not been built\n");
 }
-void do_bne(){
-	trace(TRACE1, "the command has not been built\n");
+void do_br(){
+	//pc = (pc + 2 * xx.x) & 0xffff;
+	pc = pc + 2 * xx.x;
+	trace2();
+}
+void do_beq(){
+	if (flag_Z())	//if z = 1
+		do_br();
+	else
+		trace2();
+}
+void do_bne(){			//if z = 0
+	if(!flag_Z())
+		do_br();
+	else
+		trace2();
 }
 void do_bmi(){
-	trace(TRACE1, "the command has not been built\n");
+	if (flag_N())	//if n = 1
+		do_br();
+	else
+		trace2();
+}
+void do_bpl(){	
+	if (!flag_N())	//if n = 0
+		do_br();
+	else
+		trace2();
 }
 void do_blt(){
-	trace(TRACE1, "the command has not been built\n");
+	if (flag_N() ^ flag_V())	//if n ^ v = 1
+		do_br();
+	else
+		trace2();
 }
 void do_bge(){
-	trace(TRACE1, "the command has not been built\n");
+	if (!(flag_N() ^ flag_V()))	//if n ^ v = 0
+		do_br();
+	else
+		trace2();
 }
 void do_ble(){
 	trace(TRACE1, "the command has not been built\n");
@@ -493,31 +501,43 @@ word psw(word w0, word w1){
 	return res;
 }
 
-char * NZVC (word w) {
+char * NZVC () {
 	char * res = malloc(5 * sizeof(char));
 	res[4] = '\0';
 
-	if (w & 1)
+	if (flag_C())
 		res[3] = 'C';
 	else
 		res[3] = ' ';
 
-	if (w & 2)
+	if (flag_V())
 		res[2] = 'V';
 	else
 		res[2] = ' ';
 
-	if (w & 4)
+	if (flag_Z())
 		res[1] = 'Z';
 	else
 		res[1] = ' ';
 
-	if (w & 8)
+	if (flag_N())
 		res[0] = 'N';
 	else
 		res[0] = ' '; 
 
 	return res;
+}
+int flag_N(){
+	return (PSW & 8) >> 3;
+}
+int flag_Z(){
+	return (PSW & 4) >> 2;
+}
+int flag_V(){
+	return (PSW & 2) >> 2;
+}
+int flag_C(){
+	return (PSW & 1);
 }
 
 void trace2(){
