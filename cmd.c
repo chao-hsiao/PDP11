@@ -5,52 +5,53 @@
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
+#include <unistd.h>
 
 Command command[] = {
-	{0170000, 0010000, "MOV", HAS_DD + HAS_SS, do_mov},				//dd+ss //0
-	{0170000, 0110000, "MOVb", HAS_DD + HAS_SS + HAS_B, do_movb},
-	{0170000, 0060000, "ADD", HAS_DD + HAS_SS, do_add},
-	{0170000, 0160000, "SUB", HAS_DD + HAS_SS, do_sub},
-	{0170000, 0020000, "CMP", HAS_DD + HAS_SS, do_cmp},
-	{0170000, 0120000, "CMPb", HAS_DD + HAS_SS + HAS_B, do_cmpb},
-	{0170000, 0040000, "BIC", HAS_DD + HAS_SS, do_bic},
-	{0170000, 0140000, "BICb", HAS_DD + HAS_SS + HAS_B, do_bicb},
-	{0170000, 0050000, "BIS", HAS_DD + HAS_SS, do_bis},
-	{0170000, 0150000, "BISb", HAS_DD + HAS_SS + HAS_B, do_bisb},
-	{0170000, 0030000, "BIT", HAS_DD + HAS_SS, do_bit},
-	{0170000, 0130000, "BITb", HAS_DD + HAS_SS + HAS_B, do_bitb},			//11
+	{0170000, 0010000, "MOV", HAS_DD | HAS_SS, do_mov},				//dd+ss //0
+	{0170000, 0110000, "MOVb", HAS_DD | HAS_SS | HAS_B, do_movb},
+	{0170000, 0060000, "ADD", HAS_DD | HAS_SS, do_add},
+	{0170000, 0160000, "SUB", HAS_DD | HAS_SS, do_sub},
+	{0170000, 0020000, "CMP", HAS_DD | HAS_SS, do_cmp},
+	{0170000, 0120000, "CMPb", HAS_DD | HAS_SS | HAS_B, do_cmpb},
+	{0170000, 0040000, "BIC", HAS_DD | HAS_SS, do_bic},
+	{0170000, 0140000, "BICb", HAS_DD | HAS_SS | HAS_B, do_bicb},
+	{0170000, 0050000, "BIS", HAS_DD | HAS_SS, do_bis},
+	{0170000, 0150000, "BISb", HAS_DD | HAS_SS | HAS_B, do_bisb},
+	{0170000, 0030000, "BIT", HAS_DD | HAS_SS, do_bit},
+	{0170000, 0130000, "BITb", HAS_DD | HAS_SS | HAS_B, do_bitb},			//11
 
-	{0177000, 0070000, "MUL", HAS_R + HAS_SS, do_mul},				//r+ss  //12
-	{0177000, 0071000, "DIV", HAS_R + HAS_SS, do_div},
-	{0177000, 0072000, "ASH", HAS_R + HAS_SS, do_ash},
-	{0177000, 0073000, "ASHC", HAS_R + HAS_SS, do_ashc},
-	{0177000, 0073000, "XOR", HAS_R + HAS_SS, do_xor},						//16
+	{0177000, 0070000, "MUL", HAS_R | HAS_SS, do_mul},				//r+ss  //12
+	{0177000, 0071000, "DIV", HAS_R | HAS_SS, do_div},
+	{0177000, 0072000, "ASH", HAS_R | HAS_SS, do_ash},
+	{0177000, 0073000, "ASHC", HAS_R | HAS_SS, do_ashc},
+	{0177000, 0073000, "XOR", HAS_R | HAS_SS, do_xor},						//16
 
 	{0177400, 0000100, "JMP", HAS_DD, do_jmp},						//dd 	//17
 	{0177700, 0006100, "ROL", HAS_DD, do_rol},
-	{0177700, 0106100, "ROLb", HAS_DD + HAS_B, do_rolb},
+	{0177700, 0106100, "ROLb", HAS_DD | HAS_B, do_rolb},
 	{0177700, 0006000, "ROR", HAS_DD, do_ror},
-	{0177700, 0106000, "RORb", HAS_DD, do_rorb},
+	{0177700, 0106000, "RORb", HAS_DD | HAS_B, do_rorb},
 	{0177700, 0005100, "COM", HAS_DD, do_com},
-	{0177700, 0105100, "COMb", HAS_DD + HAS_B, do_comb},
+	{0177700, 0105100, "COMb", HAS_DD | HAS_B, do_comb},
 	{0177400, 0005500, "ADC", HAS_DD, do_adc},
-	{0177400, 0105500, "ADCb", HAS_DD + HAS_B, do_adcb},
+	{0177400, 0105500, "ADCb", HAS_DD | HAS_B, do_adcb},
 	{0177400, 0006300, "ASL", HAS_DD, do_asl},
-	{0177400, 0106300, "ASLb", HAS_DD + HAS_B, do_aslb},
+	{0177400, 0106300, "ASLb", HAS_DD | HAS_B, do_aslb},
 	{0177400, 0006200, "ASR", HAS_DD, do_asr},
-	{0177400, 0106200, "ASRb", HAS_DD + HAS_B, do_asrb},
+	{0177400, 0106200, "ASRb", HAS_DD | HAS_B, do_asrb},
 	{0177700, 0005000, "CLR", HAS_DD, do_clr},
-	{0177700, 0105000, "CLRb", HAS_DD + HAS_B, do_clrb},
+	{0177700, 0105000, "CLRb", HAS_DD | HAS_B, do_clrb},
 	{0177700, 0005700, "TST", HAS_DD, do_tst},
-	{0177700, 0105700, "TSTb", HAS_DD + HAS_B, do_tstb},
+	{0177700, 0105700, "TSTb", HAS_DD | HAS_B, do_tstb},
 	{0177400, 0005300, "DEC", HAS_DD, do_dec},
-	{0177400, 0105300, "DECb", HAS_DD + HAS_B, do_decb},
+	{0177400, 0105300, "DECb", HAS_DD | HAS_B, do_decb},
 	{0177700, 0005200, "INC", HAS_DD, do_inc},
-	{0177700, 0105200, "INCb", HAS_DD + HAS_B, do_incb},
+	{0177700, 0105200, "INCb", HAS_DD | HAS_B, do_incb},
 	{0177400, 0005400, "NEG", HAS_DD, do_neg},
-	{0177400, 0105400, "NEGb", HAS_DD + HAS_B, do_negb},
+	{0177400, 0105400, "NEGb", HAS_DD | HAS_B, do_negb},
 	{0177400, 0005600, "SBC", HAS_DD, do_sbc},
-	{0177400, 0105600, "SBCb", HAS_DD, do_sbcs},
+	{0177400, 0105600, "SBCb", HAS_DD | HAS_B, do_sbcs},
 	{0177400, 0000300, "SWAB", HAS_DD, do_swab},
 	{0177400, 0006700, "SXT", HAS_DD, do_sxt},								//43
 	{0177400, 0106400, "MTPS", HAS_DD, do_mtps},
@@ -77,9 +78,9 @@ Command command[] = {
 	{0177400, 0102000, "BVC", HAS_XX, do_bvc},
 	{0177400, 0102400, "BVS", HAS_XX, do_bvs},								//65
 
-	{0177000, 0077000, "SOB", HAS_R + HAS_NN, do_sob},				//r+nn 	//66
+	{0177000, 0077000, "SOB", HAS_R | HAS_NN, do_sob},				//r+nn 	//66
 
-	{0177000, 0004000, "JSR", HAS_R + HAS_DD, do_jsr},				//r+dd  //67
+	{0177000, 0004000, "JSR", HAS_R | HAS_DD, do_jsr},				//r+dd  //67
 
 	{0177770, 0000200, "RTS", HAS_R, do_rts},								//68
 
@@ -103,7 +104,7 @@ Command command[] = {
 };
 
 Command cmd;
-Arg b, ss, dd, nn, n, r, tt, xx;
+Arg ss, dd, nn, n, r, tt;
 
 void do_mov() {
 	w_write(dd.adr, ss.val, in_reg(dd.adr));
@@ -115,9 +116,22 @@ void do_mov() {
 
 	if(in_reg(dd.adr) == 0)
 		trace(TRACE1, " [%06o]", dd.adr);
-	if(dd.adr == odata)
-		trace(TRACE1, " %c ", w_read(dd.adr, in_reg(dd.adr)));
+	if(dd.adr == odata){					//output
+		if(current_log_level == INFO){
+			if (!isatty(fileno(stdout)))
+				fprintf(stdout, "%c", w_read(dd.adr, in_reg(dd.adr)));
+			else
+				fprintf(stderr, "%c", w_read(dd.adr, in_reg(dd.adr)));
+		}
+		else{
+			trace(TRACE1, " [%06o] ", dd.adr);
+			if (!isatty(fileno(stdout)))
+				fprintf(stdout, "%c", w_read(dd.adr, in_reg(dd.adr)));
+			else
+				trace(TRACE1, "%c", w_read(dd.adr, in_reg(dd.adr)));
+		}
 		//w_write(odata, 0000000, in_reg(odata));
+	}
 
 	trace(TRACE1, "\n");
 	trace2();
@@ -130,9 +144,22 @@ void do_movb() {
 	else
 		trace(TRACE1, "[%06o]=%03o", ss.adr, b_read(ss.adr, in_reg(ss.adr)));
 
-	if(dd.adr == odata)
-		trace(TRACE1, " [%06o] %c ", dd.adr, b_read(dd.adr, in_reg(dd.adr)));
+	if(dd.adr == odata){					//output
+		if(current_log_level == INFO){
+			if (!isatty(fileno(stdout)))
+				fprintf(stdout, "%c", b_read(dd.adr, in_reg(dd.adr)));
+			else
+				fprintf(stderr, "%c", b_read(dd.adr, in_reg(dd.adr)));
+		}
+		else{
+			trace(TRACE1, " [%06o] ", dd.adr);
+			if (!isatty(fileno(stdout)))
+				fprintf(stdout, "%c", b_read(dd.adr, in_reg(dd.adr)));
+			else
+				trace(TRACE1, "%c", b_read(dd.adr, in_reg(dd.adr)));
+		}
 		//w_write(odata, 0000000, in_reg(odata));
+	}
 
 	trace(TRACE1, "\n");
 	trace2();
@@ -194,11 +221,11 @@ void do_clrb(){
 void do_halt() {
 	trace(TRACE1, "THE_END\n");
 	trace2();
-	printf("\n---------------- halted --------------\n");
-	printf("R0=%06o R2=%06o R4=%06o SP=%06o\n", reg[0],reg[2],reg[4],reg[6]);
-	printf("R1=%06o R3=%06o R5=%06o PC=%06o\n", reg[1],reg[3],reg[5],reg[7]);
+	fprintf(stderr, "\n---------------- halted --------------\n");
+	fprintf(stderr, "R0=%06o R2=%06o R4=%06o SP=%06o\n", reg[0],reg[2],reg[4],reg[6]);
+	fprintf(stderr, "R1=%06o R3=%06o R5=%06o PC=%06o\n", reg[1],reg[3],reg[5],reg[7]);
 	char * nzvc = NZVC();
-	printf("psw=%06o: cm=k pm=k pri=0   %s [%d]\n", PSW, nzvc, counter);
+	fprintf(stderr, "psw=%06o: cm=k pm=k pri=0   %s [%d]\n", PSW, nzvc, counter);
 	free(nzvc);
 	exit(0);
 }
@@ -370,8 +397,8 @@ void do_mtpd(){
 	trace(TRACE1, "the command has not been built\n");
 }
 void do_br(){
-	//pc = (pc + 2 * xx.x) & 0xffff;
-	pc = pc + 2 * xx.x;
+	//pc = (pc + 2 * xx) & 0xffff;
+	pc = pc + 2 * xx;
 	trace2();
 }
 void do_beq(){

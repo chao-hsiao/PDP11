@@ -1,5 +1,6 @@
-#ifndef CMD_H
-#define CMD_H
+//#ifndef CMD_H
+//#define CMD_H
+#pragma once
 #include "pdp11.h"
 
 typedef struct {
@@ -9,14 +10,24 @@ typedef struct {
 	char params;
 	void (*do_func)(void);
 } Command;
-
+/*
+struct {
+    char N;
+    char Z;
+    char V;
+    char C;
+} psw;
+*/
 typedef struct {
 	word val;
 	word adr;
-	char x;
 } Arg;
 
-extern Arg b, ss, dd, nn, n, r, tt, xx;
+int has_byte();
+extern int b;
+char get_xx(word w);
+extern char xx;
+extern Arg ss, dd, nn, n, r, tt;
 extern Command command[];
 extern Command cmd;
 
@@ -120,4 +131,4 @@ void do_wait();
 void do_reset();
 void do_nothing();
 
-#endif
+//#endif

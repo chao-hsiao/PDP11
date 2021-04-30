@@ -12,17 +12,17 @@ void run();
 Arg get_modereg(word w);
 Arg get_address(word w);
 Arg get_number(word w);
-Arg get_xx(word w);
-Arg get_b(word w);
+int b;
+char xx;
 
 int main(int argc, char const *argv[]) {
 
 	if(usage(argv, argc))
 		return 1;
-	load_file(argv, argc - 1);
+	load_file(argv[argc - 1]);
 	//mem_dump(0x200,0xe);
 
-	printf("\n---------------- running --------------\n");
+	fprintf(stderr, "\n---------------- running --------------\n");
 
 	run();
 
@@ -50,14 +50,14 @@ void run() {
 			if ((w & cmd.mask) == cmd.opcode) {
 				trace(TRACE1, "%s\t", cmd.name);
 
+				b = has_byte();
 				if(cmd.params == NO_PARAMS) {}
-				if((cmd.params & HAS_B) == HAS_B)
-					b = get_b(w >> 15);
+				//if(cmd.params & HAS_B)	
 				if((cmd.params & HAS_R) == HAS_R) {
 					if(cmd.opcode == 0000200)
 						r = get_address(w & 7);
 					else
-						r = get_address((w & 0777) >> 6);
+						r = get_address((w >> 6) & 7);
 					if(r.adr == 7)
 						trace(TRACE1, "PC");
 					else if(r.adr == 6)
@@ -80,7 +80,7 @@ void run() {
 				}
 				if((cmd.params & HAS_NN) == HAS_NN) {
 					nn = get_number(w & 077);
-					trace(DEBUG,"%o", nn.val);
+					trace(DEBUG1,"nn.val=%o", nn.val);
 				}
 				if((cmd.params & HAS_N) == HAS_N) {
 					n = get_number(w);
@@ -90,10 +90,8 @@ void run() {
 				}
 				if((cmd.params & HAS_XX) == HAS_XX) {
 					xx = get_xx(w);
-					trace(TRACE1, "%06o\n", pc + 2 * xx.x);
+					trace(TRACE1, "%06o\n", pc + 2 * xx);
 				}
-				
-				b.val = 0;
 
 				cmd.do_func();
 				
@@ -106,16 +104,16 @@ void run() {
 Arg get_modereg(word w) {
 	Arg res;
 	word regi, mode, index;
-	trace(DEBUG,"%o ", w);
+	trace(DEBUG1,"w=%o ", w);
 	regi = w & 07;
-	trace(DEBUG,"%o ", regi);
+	trace(DEBUG1,"regi=%o ", regi);
 	mode = w >> 3 & 07;
-	trace(DEBUG,"%o ", mode);
+	trace(DEBUG1,"mode=%o ", mode);
 
 	switch (mode) {
 		case 0:				//Rn
 			res.adr = regi;
-			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
+			res.val = b ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
 				trace(TRACE1, "PC");
 			else if (regi == 6)
@@ -125,7 +123,7 @@ Arg get_modereg(word w) {
 			break;
 		case 1:				//(Rn)
 			res.adr = reg[regi];
-			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
+			res.val = b ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
 				trace(TRACE1, "(PC)");
 			else if (regi == 6)
@@ -135,7 +133,7 @@ Arg get_modereg(word w) {
 			break;
 		case 2:				//(Rn)+; if n = 7 -> #val
 			res.adr = reg[regi];
-			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
+			res.val = b ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7){
 				pc = pc + 2;
 				trace(TRACE1, "#%06o", res.val);
@@ -145,13 +143,13 @@ Arg get_modereg(word w) {
 				trace(TRACE1, "(SP)+");
 			}
 			else{
-				reg[regi] = reg[regi] + (b.val ? 1 : 2);
+				reg[regi] = reg[regi] + (b ? 1 : 2);
 				trace(TRACE1, "(R%o)+", regi);
 			}
 			break;
 		case 3:				//@(Rn)+; if n = 7 -> @#adr
 			res.adr = w_read(reg[regi], in_reg(reg[regi]));
-			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
+			res.val = b ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			reg[regi] = reg[regi] + 2;
 			if (regi == 7)
 				trace(TRACE1, "@#%06o", res.adr);
@@ -164,9 +162,9 @@ Arg get_modereg(word w) {
 			if (regi == 7 & regi == 6)
 				reg[regi] = reg[regi] - 2;
 			else
-				reg[regi] = reg[regi] - (b.val ? 1 : 2);
+				reg[regi] = reg[regi] - (b ? 1 : 2);
 			res.adr = reg[regi];
-			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));	
+			res.val = b ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));	
 			if (regi == 7)
 				trace(TRACE1, "-(PC)");
 			else if (regi == 6)
@@ -178,7 +176,7 @@ Arg get_modereg(word w) {
 		case 5:				//@-(Rn)
 			reg[regi] = reg[regi] - 2;
 			res.adr = w_read(reg[regi], in_reg(reg[regi]));
-			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
+			res.val = b ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
 				trace(TRACE1, "@-(PC)");
 			else if(regi == 6)
@@ -190,7 +188,7 @@ Arg get_modereg(word w) {
 			index = w_read(pc, in_reg(pc));
 			pc = pc + 2;
 			res.adr = reg[regi] + index;
-			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
+			res.val = b ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
 				trace(TRACE1, "%06o ", res.adr);
 			else if (regi == 6)
@@ -202,7 +200,7 @@ Arg get_modereg(word w) {
 			index = w_read(pc, in_reg(pc));
 			pc = pc + 2;
 			res.adr = w_read(reg[regi] + index, in_reg(reg[regi] + index));
-			res.val = b.val ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
+			res.val = b ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
 			if (regi == 7)
 				trace(TRACE1, "@%06o", res.adr);
 			else if (regi == 6)
@@ -218,10 +216,11 @@ Arg get_modereg(word w) {
 	return res;
 }
 
-Arg get_b(word w){
-	Arg res;
-	res.val = w;
-	return res;
+int has_byte(){
+	return cmd.params & HAS_B;
+}
+char get_xx(word w){
+	return w;
 }
 Arg get_number(word w){
 	Arg res;
@@ -233,11 +232,7 @@ Arg get_address(word w){
 	res.adr = w;
 	return res;
 }
-Arg get_xx(word w){
-	Arg res;
-	res.x = w;
-	return res;
-}
+
 
 void trace(int log_level, const char * format, ...){
 	// никакой печати, если логирование ниже по уровню
@@ -245,6 +240,9 @@ void trace(int log_level, const char * format, ...){
 		return;
 	va_list ap;
 	va_start(ap, format);
-	vprintf(format, ap);
+	vfprintf(stderr, format, ap);
 	va_end(ap);
 }
+
+
+

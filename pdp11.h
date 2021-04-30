@@ -1,6 +1,6 @@
-#ifndef PDP11_H
-#define PDP11_H
-
+//#ifndef PDP11_H
+//#define PDP11_H
+#pragma once
 
 typedef unsigned char byte;			//8 bit
 typedef unsigned short int word;	//16 bit
@@ -42,11 +42,12 @@ enum LOGLEVEL {
 	ERROR = 4
 };
 */
-#define DEBUG 1
+#define DEBUG2 1
 #define TRACE2 2
-#define TRACE1 3
-#define INFO 4
-#define ERROR 5
+#define DEBUG1 3
+#define TRACE1 4
+#define INFO 5
+#define ERROR 6
 
 void test_mem();
 
@@ -55,7 +56,7 @@ void b_write(adr a, byte val, int in_reg); 	// пишет значение val �
 word w_read(adr a, int in_reg);            	// читает из "старой памяти" mem слово с "адресом" a.
 void w_write(adr a, word val, int in_reg);  // пишет значение val в "старую память" mem в слово с "адресом" a.
 
-void load_file(const char ** filename, int argc);
+void load_file(const char * filename);
 void mem_dump(adr start, word n);
 
 int in_reg(adr a);
@@ -65,4 +66,4 @@ int usage(const char ** argv, int argc);
 // void trace(enum LOGLEVEL log_level, const char * c, ...);
 void trace(int log_level, const char * c, ...);
 
-#endif
+//#endif
