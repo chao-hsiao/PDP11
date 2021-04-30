@@ -44,7 +44,7 @@ enum LOGLEVEL {
 */
 #define DEBUG2 1
 #define TRACE2 2
-#define DEBUG1 3
+#define DEBUG1 1
 #define TRACE1 4
 #define INFO 5
 #define ERROR 6

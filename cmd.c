@@ -249,12 +249,14 @@ void do_tstb(){
 }
 
 void do_rol(){
-	dd.val = (dd.val << 1) & 0xffff;
+	PSW = psw(dd.val, dd.val);
+	dd.val = (dd.val << 1) & 0xfffe;
 	w_write(dd.adr, dd.val, in_reg(dd.adr));
 	if (in_reg(dd.adr))
 		trace(TRACE1, " \t \tR%o=%06o\n", dd.adr, dd.val);
 	else
 		trace(TRACE1, "[%06o]=%06o\n", dd.adr, dd.val);
+	trace2();
 }
 void do_rolb(){
 	trace(TRACE1, "the command has not been built\n");
@@ -531,26 +533,28 @@ word psw(word w0, word w1){
 char * NZVC () {
 	char * res = malloc(5 * sizeof(char));
 	res[4] = '\0';
+	int cl = current_log_level;
+	char c = cl == TRACE2 ? '-' : ' ';
 
 	if (flag_C())
 		res[3] = 'C';
 	else
-		res[3] = ' ';
+		res[3] = c;
 
 	if (flag_V())
 		res[2] = 'V';
 	else
-		res[2] = ' ';
+		res[2] = c;
 
 	if (flag_Z())
 		res[1] = 'Z';
 	else
-		res[1] = ' ';
+		res[1] = c;
 
 	if (flag_N())
 		res[0] = 'N';
 	else
-		res[0] = ' '; 
+		res[0] = c; 
 
 	return res;
 }
@@ -561,14 +565,16 @@ int flag_Z(){
 	return (PSW & 4) >> 2;
 }
 int flag_V(){
-	return (PSW & 2) >> 2;
+	return (PSW & 2) >> 1;
 }
 int flag_C(){
 	return (PSW & 1);
 }
 
 void trace2(){
-	trace(TRACE2, "---- 0:%06o 1:%06o 2:%06o 3:%06o 4:%06o 5:%06o S:%06o P:%06o\n", reg[0],reg[1],reg[2],reg[3],reg[4],reg[5],reg[6],reg[7]);
+	char * nzvc = NZVC();
+	trace(TRACE2, "%s 0:%06o 1:%06o 2:%06o 3:%06o 4:%06o 5:%06o S:%06o P:%06o\n", nzvc, reg[0],reg[1],reg[2],reg[3],reg[4],reg[5],reg[6],reg[7]);
+	free(nzvc);
 	//printf("psw=%06o: [%d]\n", PSW, counter);
 }
 
