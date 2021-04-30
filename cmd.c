@@ -233,7 +233,7 @@ void do_halt() {
 void do_tst(){
 	PSW = psw(dd.val, 0);
 	if (in_reg(dd.adr))
-		trace(TRACE1, "R%o=%06o\n", dd.adr, dd.val);
+		trace(TRACE1, " \t \tR%o=%06o\n", dd.adr, dd.val);
 	else
 		trace(TRACE1, "[%06o]=%06o\n", dd.adr, dd.val);
 	trace2();
@@ -252,7 +252,7 @@ void do_rol(){
 	dd.val = (dd.val << 1) & 0xffff;
 	w_write(dd.adr, dd.val, in_reg(dd.adr));
 	if (in_reg(dd.adr))
-		trace(TRACE1, "R%o=%06o\n", dd.adr, dd.val);
+		trace(TRACE1, " \t \tR%o=%06o\n", dd.adr, dd.val);
 	else
 		trace(TRACE1, "[%06o]=%06o\n", dd.adr, dd.val);
 }
