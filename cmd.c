@@ -182,7 +182,7 @@ void do_add() {
 	trace2();
 }
 void do_sub(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 
 void do_sob() {
@@ -205,7 +205,7 @@ void do_inc() {
 	trace2();
 }
 void do_incb(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 
 void do_clr() {
@@ -215,7 +215,7 @@ void do_clr() {
 	trace2();
 }
 void do_clrb(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 
 void do_halt() {
@@ -259,13 +259,13 @@ void do_rol(){
 	trace2();
 }
 void do_rolb(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_ror(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_rorb(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 
 void do_rts(){
@@ -289,114 +289,120 @@ void do_jmp(){
 }
 
 void do_com(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 /*	dd.adr = ~ dd.adr;
 	PSW = psw(dd.adr, 0) | 1;
 	trace2();*/
 }
 void do_comb(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 //	dd.adr = ~ dd.adr;
 }
 
 void do_cmp(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_cmpb(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_bic(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_bicb(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_bis(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_bisb(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_bit(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_bitb(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 
 void do_mul(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_div(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_ash(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_ashc(){
-	trace(TRACE1, "the command has not been built\n");
+/*	if(ss.val < 0)
+		w_write(r.adr, (ss.val >> 1) | (ss.val & 0x8000), in_reg(r.adr));
+	else
+		w_write(r.adr, ss.void << 1, in_reg(r.adr));
+	PSW()*/
+
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_xor(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 
 void do_adc(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_adcb(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_asl(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_aslb(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_asr(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_asrb(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 
 void do_dec(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_decb(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_neg(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_negb(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_sbc(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_sbcs(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_swab(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_sxt(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_mtps(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_mfpi(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_mfpd(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_mtpi(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_mtpd(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_br(){
 	//pc = (pc + 2 * xx) & 0xffff;
@@ -440,74 +446,74 @@ void do_bge(){
 		trace2();
 }
 void do_ble(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_bcc(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_bcs(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_bgt(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_bhi(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_bhis(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_blo(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_blos(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_bvc(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_bvs(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 
 void do_ccc(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_clc(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_cln(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_clv(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_clz(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_scc(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_sec(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_sen(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_sev(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_sez(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_nop(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_wait(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_reset(){
-	trace(TRACE1, "the command has not been built\n");
+	trace(TRACE1, "**the command has not been built**\n");
 }
 
 void do_nothing() {
