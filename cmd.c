@@ -577,6 +577,13 @@ int flag_C(){
 	return (PSW & 1);
 }
 
+/*
+	* - dont touch
+	- - the old psw & 1, then | the new psw
+	1 - the new psw | 1
+	0 - the new psw & 0
+*/
+
 void trace2(){
 	char * nzvc = NZVC();
 	trace(TRACE2, "%s 0:%06o 1:%06o 2:%06o 3:%06o 4:%06o 5:%06o S:%06o P:%06o\n", nzvc, reg[0],reg[1],reg[2],reg[3],reg[4],reg[5],reg[6],reg[7]);
