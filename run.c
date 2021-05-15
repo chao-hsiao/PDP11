@@ -134,6 +134,7 @@ Arg get_modereg(word w) {
 		case 2:				//(Rn)+; if n = 7 -> #val
 			res.adr = reg[regi];
 			res.val = b ? b_read(res.adr, in_reg(res.adr)) : w_read(res.adr, in_reg(res.adr));
+			trace(DEBUG2, " res.adr=%o res.val=%o", res.adr, res.val);
 			if (regi == 7){
 				pc = pc + 2;
 				trace(TRACE1, "#%06o", res.val);
@@ -159,7 +160,7 @@ Arg get_modereg(word w) {
 				trace(TRACE1, "@(R%o)+", regi);
 			break;
 		case 4:				//-(Rn)
-			if (regi == 7 & regi == 6)
+			if (regi == 7 || regi == 6)
 				reg[regi] = reg[regi] - 2;
 			else
 				reg[regi] = reg[regi] - (b ? 1 : 2);

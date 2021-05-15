@@ -249,8 +249,8 @@ void do_tstb(){
 }
 
 void do_rol(){
-	PSW = psw(dd.val, dd.val);
-	dd.val = (dd.val << 1) & 0xfffe;
+	PSW = psw(dd.val, dd.val + (dd.val >> 15));
+	dd.val = ((dd.val << 1) & 0xffff) + (dd.val >> 15);
 	w_write(dd.adr, dd.val, in_reg(dd.adr));
 	if (in_reg(dd.adr))
 		trace(TRACE1, " \t \tR%o=%06o\n", dd.adr, dd.val);
@@ -259,7 +259,14 @@ void do_rol(){
 	trace2();
 }
 void do_rolb(){
-	trace(TRACE1, "**the command has not been built**\n");
+	PSW = psw(dd.val, dd.val + (dd.val >> 7));
+	dd.val = (dd.val << 1) & 0xff + (dd.val >> 7);
+	b_write(dd.adr, dd.val, in_reg(dd.adr));
+	if (in_reg(dd.adr))
+		trace(TRACE1, " \t \tR%o=%06o\n", dd.adr, dd.val);
+	else
+		trace(TRACE1, "[%06o]=%03o\n", dd.adr, dd.val);
+	trace2();
 }
 void do_ror(){
 	trace(TRACE1, "**the command has not been built**\n");
@@ -331,15 +338,15 @@ void do_div(){
 	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_ash(){
-	trace(TRACE1, "**the command has not been built**\n");
-}
-void do_ashc(){
-/*	if(ss.val < 0)
+	/*	if(ss.val < 0)
 		w_write(r.adr, (ss.val >> 1) | (ss.val & 0x8000), in_reg(r.adr));
 	else
 		w_write(r.adr, ss.void << 1, in_reg(r.adr));
 	PSW()*/
 
+	trace(TRACE1, "**the command has not been built**\n");
+}
+void do_ashc(){
 	trace(TRACE1, "**the command has not been built**\n");
 }
 void do_xor(){
